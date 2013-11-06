@@ -1,0 +1,29 @@
+- model: busapp.busstop
+  pk: 1
+  fields:
+    name: Mangalore
+
+- model: busapp.busstop
+  pk: 2
+  fields:
+    name: Surathkal
+
+
+- model: busapp.busstop
+  pk: 3
+  fields:
+    name: Manipal
+
+
+- model: busapp.universalroute
+  pk: 1
+  fields:
+    source: 1
+    destination: 3
+
+- model: busapp.universalroute
+  pk: 1
+  fields:
+    source: 3
+    destination: 1
+

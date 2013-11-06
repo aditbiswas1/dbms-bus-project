@@ -9,7 +9,7 @@ class Company(models.Model):
 	#account identifier to carry our transaction handling
 	account_number = models.CharField(max_length=10)
 	#the phone number of the associated manager
-	manaager_phone = models.IntegerField()
+	manager_phone = models.IntegerField()
 
 	def __unicode__(self):
 		return self.name
@@ -32,7 +32,7 @@ class UniversalRoute(models.Model):
 
 class RouteStop(models.Model):
 	#each stop can be associated to a many universal route
-	route = models.ForeignKey(UniversalRoute)
+	route = models.ForeignKey(UniversalRoute, related_name="route_stops")
 	#each entry in bus routes is a particular bus stop
 	bus_stop = models.ForeignKey(BusStop)
 	#stop_number on that particular universal route
@@ -41,7 +41,7 @@ class RouteStop(models.Model):
 	distance = models.DecimalField(max_digits=6, decimal_places=2)
 
 	def __unicode__(self):
-		return '%s:%s' % (self.route, self.stop)
+		return '%s:%s' % (self.bus_stop_number, self.bus_stop)
 
 class Bus(models.Model):
 	#uniquely identified using Bus.id
@@ -59,7 +59,7 @@ class Bus(models.Model):
 	discount = models.DecimalField(max_digits=4, decimal_places=2)
 
 	def __unicode__(self):
-		return '%s : %s ' %(self.route, self.id)
+		return '%s ' %(self.route)
 
 
 class Schedule(models.Model):

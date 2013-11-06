@@ -1,0 +1,16 @@
+[
+	{
+		"model": "busapp.busstop",
+		"pk" : 1,
+		"fields":{
+			"name": "Mangalore"
+		}
+	},
+	{
+		"model": "busapp.busstop",
+		"pk" : 2,
+		"fields":{
+			"name": "Manipal"
+		}
+	}
+]
