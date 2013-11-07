@@ -41,8 +41,8 @@ urlpatterns += patterns('busapp.views',
 
 #patterns related to customers
 urlpatterns +=patterns('busapp.views',
-	url(r'^customers/$',views.CustomerList.as_view(), name='customer-list'),
-	url(r'^customers/(?P<pk>[0-9]+)/$',views.CustomerDetail.as_view(), name='customer-detail'),	
+	url(r'^customer/$',views.CustomerList.as_view(), name='customer-list'),
+	url(r'^customer/(?P<pk>[0-9]+)/$',views.CustomerDetail.as_view(), name='customer-detail'),	
 	)
 #format the suffix of the patterns to accept data types of html, json , xml
 urlpatterns = format_suffix_patterns(urlpatterns)

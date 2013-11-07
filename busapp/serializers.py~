@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from busapp.models import BusStop, UniversalRoute, RouteStop, Company, Bus, Customer
+from busapp.models import BusStop, UniversalRoute, RouteStop, Company, Bus
 from django.contrib.auth.models import User
 #serializer class for busstops
 class BusStopSerializer(serializers.ModelSerializer):

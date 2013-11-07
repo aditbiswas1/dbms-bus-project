@@ -74,10 +74,6 @@ class Schedule(models.Model):
 class Customer(models.Model):
 	#username associated with the customer
 	user = models.OneToOneField(User)
-	#first name
-	fname = models.CharField(max_length=20)
-	#last name
-	lname = models.CharField(max_length=20)
 	#phone number
 	phone_number = models.IntegerField()
 	#bank account

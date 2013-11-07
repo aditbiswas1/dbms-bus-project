@@ -73,12 +73,3 @@ class BusList(generics.ListCreateAPIView):
 class BusDetail(generics.RetrieveUpdateDestroyAPIView):
 	queryset = Bus.objects.all()
 	serializer_class = BusSerializer
-
-#Customers api
-class CustomerList(generics.ListCreateAPIView):
-	queryset = Customer.objects.all()
-	serializer_class = CustomerSerializer
-
-class CustomerDetail(generics.RetrieveUpdateDestroyAPIView):
-	queryset = Customer.objects.all()
-	serializer_class = CustomerSerializer
