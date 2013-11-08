@@ -7,7 +7,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
-from busapp.models import Bus, BusStop, UniversalRoute, RouteStop, Company, Transaction, Schedule
+from busapp.models import Bus, BusStop, UniversalRoute, RouteStop, Company
 
 
 # BusStop Apis
