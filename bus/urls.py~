@@ -7,4 +7,9 @@ from django.conf.urls import patterns, include, url
 urlpatterns = patterns('',
     url(r'^', include('busapp.urls')),
 )
+urlpatterns += patterns('django.contrib.auth.views',
+		url(r'login/$', 'login', { 'template_name': 'login.html'},
+			name='bus_login'),
+		url(r'logout/$', 'logout', {'next_page': '/'}, name='bus_logout'),
+		)
 
