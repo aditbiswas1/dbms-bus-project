@@ -39,5 +39,8 @@ urlpatterns += patterns('busapp.views',
 	url(r'^buses/(?P<pk>[0-9]+)/$', views.BusDetail.as_view(), name='bus-detail'),
 	)
 
+urlpatterns += patterns('busapp.views',
+	url(r'^$', views.index, name='index')
+)
 #format the suffix of the patterns to accept data types of html, json , xml
 urlpatterns = format_suffix_patterns(urlpatterns)

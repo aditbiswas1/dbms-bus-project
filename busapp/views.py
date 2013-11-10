@@ -6,7 +6,8 @@ from rest_framework import renderers
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-
+from django.http import HttpResponse
+from django.template import RequestContext, loader
 from busapp.models import Bus, BusStop, UniversalRoute, RouteStop, Company
 
 
@@ -73,3 +74,8 @@ class BusList(generics.ListCreateAPIView):
 class BusDetail(generics.RetrieveUpdateDestroyAPIView):
 	queryset = Bus.objects.all()
 	serializer_class = BusSerializer
+
+def index(request):
+	template = loader.get_template('busapp/index.html')
+	context = RequestContext(request, {})
+	return HttpResponse(template.render(context))
