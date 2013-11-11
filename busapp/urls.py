@@ -39,6 +39,18 @@ urlpatterns += patterns('busapp.views',
 	url(r'^buses/(?P<pk>[0-9]+)/$', views.BusDetail.as_view(), name='bus-detail'),
 	)
 
+#patterns related to transactions
+urlpatterns += patterns('busapp.views',
+	url(r'^transactions/$', views.TransactionList.as_view(), name='transaction-list'),
+	url(r'^transactions/(?P<pk>[0-9]+)/$', views.TransactionDetail.as_view(), name='transaction-detail'),
+	)
+
+#patterns related to schedules
+urlpatterns += patterns('busapp.views',
+	url(r'^schedules/$', views.ScheduleList.as_view(), name='schedule-list'),
+	url(r'^schedules/(?P<pk>[0-9]+)/$', views.ScheduleDetail.as_view(), name='schedule-detail'),
+	)
+
 #patterns related to customers
 urlpatterns +=patterns('busapp.views',
 	url(r'^customers/$',views.CustomerList.as_view(), name='customer-list'),
@@ -46,4 +58,3 @@ urlpatterns +=patterns('busapp.views',
 	)
 #format the suffix of the patterns to accept data types of html, json , xml
 urlpatterns = format_suffix_patterns(urlpatterns)
-

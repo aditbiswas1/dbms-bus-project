@@ -1,5 +1,9 @@
 from rest_framework import serializers
+<<<<<<< HEAD
 from busapp.models import BusStop, UniversalRoute, RouteStop, Company, Bus
+=======
+from busapp.models import BusStop, UniversalRoute, RouteStop, Company, Bus, Transaction, Schedule
+>>>>>>> arora
 from django.contrib.auth.models import User
 #serializer class for busstops
 class BusStopSerializer(serializers.ModelSerializer):
@@ -60,6 +64,7 @@ class BusSerializer(serializers.ModelSerializer):
 		model = Bus
 		fields = ('owner', 'route', 'rate', 'speed', 'capacity', 'discount')
 
+<<<<<<< HEAD
 #serialize customers
 class CustomerSerializer(serializers.ModelSerializer):
 	user = serializers.PrimaryKeyRelatedField()
@@ -67,3 +72,14 @@ class CustomerSerializer(serializers.ModelSerializer):
 		model = Customer
 		fields = ('user','fname','lname','address')
 
+=======
+class TransactionSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Transaction
+		fields = ('id','customer','schedule','cost','seat','transaction_time')
+
+class ScheduleSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Schedule
+		fields = ('bus','datetime')
+>>>>>>> arora

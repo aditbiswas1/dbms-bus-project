@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from busapp.models import BusStop, UniversalRoute, RouteStop, Company, Bus, Customer
+from busapp.models import BusStop, UniversalRoute, RouteStop, Company, Bus, Transaction, Schedule, Customer
 from django.contrib.auth.models import User
 #serializer class for busstops
 class BusStopSerializer(serializers.ModelSerializer):
@@ -59,6 +59,16 @@ class BusSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Bus
 		fields = ('owner', 'route', 'rate', 'speed', 'capacity', 'discount')
+
+class TransactionSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Transaction
+		fields = ('id','customer','schedule','cost','seat','transaction_time')
+
+class ScheduleSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Schedule
+		fields = ('bus','datetime')
 
 #serialize customers
 class CustomerSerializer(serializers.ModelSerializer):

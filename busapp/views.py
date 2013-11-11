@@ -7,7 +7,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
-from busapp.models import Bus, BusStop, UniversalRoute, RouteStop, Company, Customer
+from busapp.models import Bus, BusStop, UniversalRoute, RouteStop, Company, Customer, Transaction, Schedule
 
 
 # BusStop Apis
@@ -73,6 +73,24 @@ class BusList(generics.ListCreateAPIView):
 class BusDetail(generics.RetrieveUpdateDestroyAPIView):
 	queryset = Bus.objects.all()
 	serializer_class = BusSerializer
+
+#Transaction api
+class TransactionList(generics.ListCreateAPIView):
+	queryset = Transaction.objects.all()
+	serializer_class = TransactionSerializer
+
+class TransactionDetail(generics.RetrieveUpdateDestroyAPIView):
+	queryset = Transaction.objects.all()
+	serializer_class = TransactionSerializer
+
+#Schedule api
+class ScheduleList(generics.ListCreateAPIView):
+	queryset = Schedule.objects.all()
+	serializer_class = ScheduleSerializer
+
+class ScheduleDetail(generics.RetrieveUpdateDestroyAPIView):
+	queryset = Schedule.objects.all()
+	serializer_class = ScheduleSerializer
 
 #Customers api
 class CustomerList(generics.ListCreateAPIView):

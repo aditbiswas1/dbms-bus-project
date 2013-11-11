@@ -83,7 +83,11 @@ class Customer(models.Model):
 	#date of birth
 	dob = models.DateField()
 	#gender
+<<<<<<< HEAD
 	gender = models.CharField(max_length=6)
+=======
+	#gender = models.
+>>>>>>> arora
 
 class Transaction(models.Model):
 	#identified using transaction.id
