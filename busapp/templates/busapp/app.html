@@ -1,0 +1,20 @@
+{% load static from staticfiles %}
+<script src="{% static 'js/vendor/underscore-min.js' %}"></script>
+<script src="{% static 'js/vendor/jquery-1.10.2.min.js' %}"></script>
+<script src="{% static 'js/vendor/backbone-min.js'%}"></script>
+<script type="text/javascript">
+		var Company = Backbone.Model.extend({
+
+		});
+		var Companies = Backbone.Collection.extend({
+			url: 'busstops/',
+			model: Company,
+			/*
+			initialize: function(){
+				this.fetch();
+			}
+			*/
+		});
+		companies = new Companies();
+	</script>
+<h1>This is working</h1>

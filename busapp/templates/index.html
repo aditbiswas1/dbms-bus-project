@@ -1,0 +1,88 @@
+{% load static from staticfiles %}
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>Bus Application Project </title>
+	<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+	<link rel="stylesheet" href="{% static 'css/bootstrap-theme.min.css' %}">
+	<script type="text/javascript" src="{% static 'js/vendor/jquery-1.10.2.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
+	<style>
+	body {
+		background: url("{% static 'img/wallpaper.jpg' %}");
+		background-size: cover;
+		background-repeat: no-repeat;
+	}
+	.info{
+		position: fixed;
+		bottom: 20px;
+		width: 100%;
+		height: 40%;
+		margin-bottom: 0;
+		background: rgba(190,190,190,0.6);
+		color: #000;
+		padding-top: 50px;
+	}
+	.headline{
+		color: #fff;
+		font-size: 7em;
+		margin: 0 auto;
+		text-align: center;
+		text-shadow: 1px 0px 20px rgba(0,160,0,0.5);
+	}
+	.navbar{
+		border-radius: 0;
+	}
+	</style>	
+</head>
+<body>
+	<nav class="navbar navbar-inverse" role="navigation">
+			<div class="container">
+				<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-head-collapse">
+					<span class="sr-only">Toggle Navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<div class="navbar-header">
+					<a href="#" class="navbar-brand">Bus Application</a>
+				</div>
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="{% url 'bus_login' %}">Login</a></li>
+					<li><a href="{% url 'register' %}">Sign Up</a></li>
+				</ul>	
+			</div>
+			
+		</nav>
+
+	
+		<h1 class='headline'>Welcome to Bus Application</h1>
+		<div class="info">
+			<div class="container">
+				
+				<div class="row">
+					<div class="col-md-4">
+						
+						<p>Book your next bus trip using our application. It's 	simple and fast to use. Sign up below as a customer</p>
+					</div>
+					<div class="col-md-4"></div>
+					<div class="col-md-4">
+						<p>Are you the owner of a bus company. We provide an easy to use bus management system with features to help you manage your business better. Register below as a bus company and take your business to the next stop.</p>
+					</div>
+				</div>
+				<div class="row"></div>
+				<div class="col-md-4">
+					<p><a href="{% url 'register' %}" class="btn btn-success btn-lg" role="button">Sign Up as customer</a></p>
+				</div>
+				<div class="col-md-4"></div>
+				<div class="col-md-4">
+					<p><a href="{% url 'register' %}" class="btn btn-success btn-lg" role="buttom">Sign up as a Bus company</a></p>
+				</div>
+			</div>
+			
+
+			
+		
+	
+</body>
+</html>
