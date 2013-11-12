@@ -59,7 +59,8 @@ urlpatterns +=patterns('busapp.views',
 #format the suffix of the patterns to accept data types of html, json , xml
 urlpatterns = format_suffix_patterns(urlpatterns)
 urlpatterns += patterns('busapp.views',
-	url(r'^$', views.index, name='index')
+	url(r'^$', views.index, name='index'),
+	url(r'^company-app/$', views.company_app, name='company-app'),
 )
 urlpatterns += patterns('django.contrib.auth.views',
 		url(r'login/$', 'login', { 'template_name': 'login.html'},
