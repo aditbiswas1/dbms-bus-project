@@ -7,7 +7,7 @@ from django.http import HttpResponseRedirect
 
 from django.contrib.auth.models import User
 from rest_framework import generics
-
+from rest_framework import permissions
 from rest_framework import renderers
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -16,7 +16,7 @@ from django.http import HttpResponse
 from django.template import RequestContext, loader
 
 from busapp.models import Bus, BusStop, UniversalRoute, RouteStop, Company, Customer, Transaction, Schedule
-
+from busapp.permissions import IsOwnerOrReadOnly
 
 # BusStop Apis
 class BusStopList(generics.ListCreateAPIView):
@@ -68,10 +68,18 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
 class CompanyList(generics.ListCreateAPIView):
 	queryset = Company.objects.all()
 	serializer_class = CompanySerializer
+	permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+	
+        def pre_save(self,obj):
+                obj.owner = self.request.user
 
 class CompanyDetail(generics.RetrieveUpdateDestroyAPIView):
 	queryset = Company.objects.all()
 	serializer_class = CompanySerializer
+	permission_classes = (permissions.IsAuthenticatedOrReadOnly,IsOwnerOrReadOnly,)
+	
+	def pre_save(self,obj):
+                obj.owner = self.request.user
 
 #Bus api
 class BusList(generics.ListCreateAPIView):
@@ -104,10 +112,18 @@ class ScheduleDetail(generics.RetrieveUpdateDestroyAPIView):
 class CustomerList(generics.ListCreateAPIView):
 	queryset = Customer.objects.all()
 	serializer_class = CustomerSerializer
+	permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+	
+        def pre_save(self,obj):
+                obj.owner = self.request.user
 
 class CustomerDetail(generics.RetrieveUpdateDestroyAPIView):
 	queryset = Customer.objects.all()
 	serializer_class = CustomerSerializer
+	permission_classes = (permissions.IsAuthenticatedOrReadOnly,IsOwnerOrReadOnly,)
+	
+        def pre_save(self,obj):
+                obj.owner = self.request.user
 
 def index(request):
 	template = loader.get_template('index.html')

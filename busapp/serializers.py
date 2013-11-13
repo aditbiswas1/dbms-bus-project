@@ -39,6 +39,7 @@ class CompanySerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Company
 		fields = ('id', 'user', 'name', 'account_number', 'manager_phone', 'buses')
+		owner = serializers.Field(source='owner.username')
 
 class BusSerializer(serializers.ModelSerializer):
 	"""
@@ -76,4 +77,5 @@ class CustomerSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Customer
 		fields = ('user','fname','lname','address')
+		owner = serializers.Field(source='owner.username')
 
