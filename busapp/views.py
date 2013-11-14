@@ -24,6 +24,7 @@ class BusStopList(generics.ListCreateAPIView):
 	Return a list of all the bustops available
 	Supports Read of all the BusStops and Create for a new BusStop
 	"""
+	#permission_classes = 3
 	queryset = BusStop.objects.all()
 	serializer_class = BusStopSerializer
 
@@ -32,41 +33,49 @@ class BusStopDetail(generics.RetrieveUpdateDestroyAPIView):
 	Return each individual BusStop
 	Supports Read, Update, Destroy
 	"""
+	#permission_classes = 1
 	queryset = BusStop.objects.all()
 	serializer_class = BusStopSerializer
 
 
 #universal routes api
 class UniversalRouteList(generics.ListCreateAPIView):
+        #permission_classes = 3
 	queryset = UniversalRoute.objects.all()
 	serializer_class = UniversalRouteSerializer
 
 class UniversalRouteDetail(generics.RetrieveUpdateDestroyAPIView):
+        #permission_classes = 1
 	queryset = UniversalRoute.objects.all()
 	serializer_class = UniversalRouteSerializer
 
 #routesStops api
 class RouteStopList(generics.ListCreateAPIView):
+        #permission_classes = 3
 	queryset = RouteStop.objects.all()
 	serializer_class = RouteStopSerializer
 
 class RouteStopDetail(generics.RetrieveUpdateDestroyAPIView):
+        #permission_classes = 1
 	queryset = RouteStop.objects.all()
 	serializer_class = RouteStopSerializer
 
 #Base Users api
 class UserList(generics.ListCreateAPIView):
+        #permission_classes = 4
 	queryset = User.objects.all()
 	serializer_class = UserSerializer
 
 
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
+        #permission_classes = 5
 	queryset = User.objects.all()
 	serializer_class = UserSerializer
 
 
 #company api
 class CompanyList(generics.ListCreateAPIView):
+        #permission_classes = 3
 	queryset = Company.objects.all()
 	serializer_class = CompanySerializer
 	permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
@@ -75,6 +84,7 @@ class CompanyList(generics.ListCreateAPIView):
                 obj.owner = self.request.user
 
 class CompanyDetail(generics.RetrieveUpdateDestroyAPIView):
+        #permission_classes = 6
 	queryset = Company.objects.all()
 	serializer_class = CompanySerializer
 	permission_classes = (permissions.IsAuthenticatedOrReadOnly,companyIsOwner,notCompanyOwner,canSeeTransaction, cannotSeeTransaction,)
@@ -84,6 +94,7 @@ class CompanyDetail(generics.RetrieveUpdateDestroyAPIView):
 
 #Bus api
 class BusList(generics.ListCreateAPIView):
+        #permission_classes = 2
 	queryset = Bus.objects.all()
 	serializer_class = BusSerializer
 
@@ -91,6 +102,7 @@ class BusList(generics.ListCreateAPIView):
                 obj.owner = self.request.owner
 
 class BusDetail(generics.RetrieveUpdateDestroyAPIView):
+        #permission_classes = 11
 	queryset = Bus.objects.all()
 	serializer_class = BusSerializer
 
@@ -99,6 +111,7 @@ class BusDetail(generics.RetrieveUpdateDestroyAPIView):
 
 #Transaction api
 class TransactionList(generics.ListCreateAPIView):
+        #permission_classes = 7
 	queryset = Transaction.objects.all()
 	serializer_class = TransactionSerializer
 
@@ -106,6 +119,7 @@ class TransactionList(generics.ListCreateAPIView):
                 obj.owner = self.request.customer
 
 class TransactionDetail(generics.RetrieveUpdateDestroyAPIView):
+        #permission_classes = 8
 	queryset = Transaction.objects.all()
 	serializer_class = TransactionSerializer
 
@@ -114,15 +128,18 @@ class TransactionDetail(generics.RetrieveUpdateDestroyAPIView):
 
 #Schedule api
 class ScheduleList(generics.ListCreateAPIView):
+        #permission_classes = 2
 	queryset = Schedule.objects.all()
 	serializer_class = ScheduleSerializer
 
 class ScheduleDetail(generics.RetrieveUpdateDestroyAPIView):
+        #permission_classes = 2
 	queryset = Schedule.objects.all()
 	serializer_class = ScheduleSerializer
 
 #Customers api
 class CustomerList(generics.ListCreateAPIView):
+        #permission_classes = 9
 	queryset = Customer.objects.all()
 	serializer_class = CustomerSerializer
 	permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
@@ -131,9 +148,10 @@ class CustomerList(generics.ListCreateAPIView):
                 obj.owner = self.request.user
 
 class CustomerDetail(generics.RetrieveUpdateDestroyAPIView):
+        #permission_classes = 10
 	queryset = Customer.objects.all()
 	serializer_class = CustomerSerializer
-	permission_classes = (permissions.IsAuthenticatedOrReadOnly,customerIsOwner,customerIsReadOnly,canSeeTransaction, cannotSeeTransaction)
+	permission_classes = (permissions.IsAuthenticatedOrReadOnly,customerIsOwner)
 	
         def pre_save(self,obj):
                 obj.owner = self.request.user

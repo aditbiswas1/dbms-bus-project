@@ -80,6 +80,6 @@ class CustomerSerializer(serializers.ModelSerializer):
 	user = serializers.PrimaryKeyRelatedField()
 	class Meta:
 		model = Customer
-		fields = ('user','fname','lname','address')
+		fields = ('user','fname','lname','phone_number', 'account_number','address','gender','dob')
 		owner = serializers.Field(source='owner.username')
 
