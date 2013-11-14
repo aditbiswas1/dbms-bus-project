@@ -7,14 +7,27 @@
 
 		});
 		var Customers = Backbone.Collection.extend({
-			url: 'busstops/',
+			url: '/users/',
 			model: Customer,
 			initialize: function(){
-				this.fetch();
-			}
+				$('#pre').append("Attempting to fetch data...");
+				this.fetch({success: function(data){
+					for(model in data.models)
+					{
+						console.log(data.models[model]);
+						$('#header').append('<br/>');
+						for(attrib in data.models[model].attributes)
+						{
+							$('#header').append(data.models[model].attributes[attrib] + "\t");
+						}
+					}
+				},error: function(){
+					$('#header').append("An error occurred. Could not fetch data.");
+					console.log("fail");				
+				}});
+			},
 		});
 		customers = new Customers();
-		$('#header').html(customers);
-		console.log(customers);
 	</script>
-<h1 id="header"></h1>
+<h2 id="pre"></h2>
+<h1 id="header">This works!</h1>
