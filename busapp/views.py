@@ -16,7 +16,7 @@ from django.http import HttpResponse
 from django.template import RequestContext, loader
 
 from busapp.models import Bus, BusStop, UniversalRoute, RouteStop, Company, Customer, Transaction, Schedule
-from busapp.permissions import IsOwnerOrReadOnly
+from busapp.permissions import *
 
 # BusStop Apis
 class BusStopList(generics.ListCreateAPIView):
@@ -59,6 +59,7 @@ class UserList(generics.ListCreateAPIView):
 	queryset = User.objects.all()
 	serializer_class = UserSerializer
 
+
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
 	queryset = User.objects.all()
 	serializer_class = UserSerializer
@@ -76,7 +77,7 @@ class CompanyList(generics.ListCreateAPIView):
 class CompanyDetail(generics.RetrieveUpdateDestroyAPIView):
 	queryset = Company.objects.all()
 	serializer_class = CompanySerializer
-	permission_classes = (permissions.IsAuthenticatedOrReadOnly,IsOwnerOrReadOnly,)
+	permission_classes = (permissions.IsAuthenticatedOrReadOnly,companyIsOwner,notCompanyOwner,canSeeTransaction, cannotSeeTransaction,)
 	
 	def pre_save(self,obj):
                 obj.owner = self.request.user
@@ -86,18 +87,30 @@ class BusList(generics.ListCreateAPIView):
 	queryset = Bus.objects.all()
 	serializer_class = BusSerializer
 
+	def pre_save(self, obj):
+                obj.owner = self.request.owner
+
 class BusDetail(generics.RetrieveUpdateDestroyAPIView):
 	queryset = Bus.objects.all()
 	serializer_class = BusSerializer
+
+	def pre_save(self, obj):
+                obj.owner = self.request.owner
 
 #Transaction api
 class TransactionList(generics.ListCreateAPIView):
 	queryset = Transaction.objects.all()
 	serializer_class = TransactionSerializer
 
+	def pre_save(self, obj):
+                obj.owner = self.request.customer
+
 class TransactionDetail(generics.RetrieveUpdateDestroyAPIView):
 	queryset = Transaction.objects.all()
 	serializer_class = TransactionSerializer
+
+	def pre_save(self, obj):
+                obj.owner = self.request.customer
 
 #Schedule api
 class ScheduleList(generics.ListCreateAPIView):
@@ -120,7 +133,7 @@ class CustomerList(generics.ListCreateAPIView):
 class CustomerDetail(generics.RetrieveUpdateDestroyAPIView):
 	queryset = Customer.objects.all()
 	serializer_class = CustomerSerializer
-	permission_classes = (permissions.IsAuthenticatedOrReadOnly,IsOwnerOrReadOnly,)
+	permission_classes = (permissions.IsAuthenticatedOrReadOnly,customerIsOwner,customerIsReadOnly,canSeeTransaction, cannotSeeTransaction)
 	
         def pre_save(self,obj):
                 obj.owner = self.request.user
