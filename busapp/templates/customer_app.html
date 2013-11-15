@@ -1,0 +1,184 @@
+{% load static from staticfiles %}
+<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+<link rel="stylesheet" href="{% static 'css/bootstrap-theme.min.css' %}">
+<script src="{% static 'js/vendor/underscore-min.js' %}"></script>
+<script src="{% static 'js/vendor/jquery-1.10.2.min.js' %}"></script>
+<script src="{% static 'js/vendor/backbone-min.js'%}"></script>
+<script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
+<script type="text/javascript">
+	$(document).on("click","#source li",function(){
+		$('#sour').html(this.innerHTML);
+		console.log(this);
+	});
+	$(document).on("click","#destination li",function(){
+		$('#dest').html(this.innerHTML);
+		console.log(this);
+	});
+</script>
+<script type="text/javascript">
+		var Customer = Backbone.Model.extend({
+
+		});
+		var Customers = Backbone.Collection.extend({
+			url: '/users/',
+			model: Customer,
+			initialize: function(){
+				
+				this.fetch({success: function(data){
+					$("h2#header").html("Welcome to the Customer-side Bus Application!");
+					$("h3#header").html("Search for the bus you would like to book.");
+				},error: function(){
+					$('body').html("<h1 id='header'></h1>");
+					$('#header').append("An error occurred. Could not fetch data.");
+					console.log("fail");				
+				}});
+			},
+		});
+		customers = new Customers();
+</script>
+<style>
+
+body {
+		background: url("{% static 'img/busstop.jpg' %}");
+		background-size: cover;
+		background-repeat: no-repeat;
+		color:white;
+	}
+
+.btn-success{
+	background : black;
+}
+
+.navbar{
+		border-radius: 0;
+	}
+
+#header{
+	text-shadow : 2px 2px rgba(3,3,3,0.5);
+	margin-left: 5%;
+}
+
+form{
+	margin-left:5%;
+	margin-top:40px;
+}
+
+.btn-group{
+	color:black;
+}
+
+.btn-group .btn,.dropdown-toggle{
+	background:transparent;
+	margin-right: 20px;
+	background:rgba(190,190,190,0.6);
+	color: white;
+	text-shadow: 1px 1px rgba(3,3,3,0.5);
+}
+
+.btn-group ul{
+	padding:10px;
+	background:rgba(190,190,190,0.6);
+}
+
+li button{
+	background:transparent;
+	border:none;
+	width:inherit;
+	height:inherit;
+}
+
+table{
+	margin:5%;
+	text-shadow:2px 2px 0px rgba(0,0,0,0.5);
+	background:rgba(190,190,190,0.6);
+	border-radius:5px;
+}
+
+table tr{
+	margin-top:5px;
+	margin-bottom:5px;
+}
+
+td{
+	margin-left:3px;
+	margin-right:3px;
+	padding:30px;
+}
+
+#shade{
+	background: rgba(3,3,3,0.5);
+}
+
+#dp{
+	background: rgba(190,190,190,0.6);
+	color:white;
+	border:none;
+	border-radius:5px;
+	padding:5px;
+	margin-right:20px;
+}
+
+</style>
+<nav class="navbar navbar-inverse" role="navigation">
+			<div class="container">
+				<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-head-collapse">
+					<span class="sr-only">Toggle Navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<div class="navbar-header">
+					<a href="#" class="navbar-brand">Customer Bus Application</a>
+				</div>
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="{% url 'bus_login' %}">Customer Name</a></li>
+					<li><a href="{% url 'register' %}">Back to Main</a></li>
+				</ul>	
+			</div>
+			
+		</nav>
+
+<div id="shade">
+<h1 id="header"></h1>
+<h2 id="header"></h2>
+<h3 id="header"></h3>
+<form method="post" action="/customer-confirm/">{% csrf_token %}
+    <div class="btn-group" id="source">
+    <span class="btn" id="sour">Source</span>
+    <button class="btn dropdown-toggle" data-toggle="dropdown">
+    <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+    <li>source 1</li>
+	<li>source 2</li>
+    </ul>
+    </div>
+	<div class="btn-group" id="destination">
+    <span class="btn" id="dest">Destination</span>
+    <button class="btn dropdown-toggle" data-toggle="dropdown">
+    <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+    <li>destination 1</li>
+	<li>destination 2</li>
+    </ul>
+    </div>
+
+<input type="date" id="dp" placeholder="--Select date--">
+
+        <input type="submit" class="btn btn-success btn-mid" value="Submit" />
+    </form>
+
+<div id='result'>
+	<table id="table">
+	<tr>
+	<td>BusID</td>
+	<td>Source</td>
+	<td>Destination</td>
+	<td>Amount</td>
+	<td>Available Seats</td>
+	<td>Time</td>
+	</tr>
+	</table>
+</div>
+</div>

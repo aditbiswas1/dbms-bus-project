@@ -55,6 +55,30 @@ urlpatterns += patterns('busapp.views',
 	url(r'^transactions/(?P<pk>[0-9]+)/$', views.TransactionDetail.as_view(), name='transaction-detail'),
 	)
 
+#patterns related to schedules
+urlpatterns += patterns('busapp.views',
+	url(r'^schedules/$', views.ScheduleList.as_view(), name='schedule-list'),
+	url(r'^schedules/(?P<pk>[0-9]+)/$', views.ScheduleDetail.as_view(), name='schedule-detail'),
+	)
+
+#patterns related to customers
+urlpatterns +=patterns('busapp.views',
+	url(r'^customers/$',views.CustomerList.as_view(), name='customer-list'),
+	url(r'^customers/(?P<pk>[0-9]+)/$',views.CustomerDetail.as_view(), name='customer-detail'),	
+	)
 #format the suffix of the patterns to accept data types of html, json , xml
 urlpatterns = format_suffix_patterns(urlpatterns)
+urlpatterns += patterns('busapp.views',
+	url(r'^$', views.index, name='index'),
+	url(r'^customer-app/$', views.customer_app, name='customer-app'),
+)
+urlpatterns += patterns('django.contrib.auth.views',
+		url(r'login/$', 'login', { 'template_name': 'login.html'},
+			name='bus_login'),
+		url(r'logout/$', 'logout', {'next_page': '/'}, name='bus_logout'),
+		)
+urlpatterns += patterns('busapp.views',
+    url(r'^register/$', views.register, name='register'),
+    url(r'^register/success/$', views.register_success),
+)
 >>>>>>> arora
