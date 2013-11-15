@@ -16,7 +16,7 @@ class IsAdmin(permissions.BasePermission):
 class IsCompanyUser_or_ReadOnly(permissions.BasePermission):
     #class no 2
     def has_object_permission(self, request, view, obj):
-        if request.user == obj.user and request.method in ['GET', 'POST', 'PUT']:
+        if request.user == obj.owner.user and request.method in ['GET', 'POST', 'PUT']:
             return True
         elif request.user !=obj.user and request.method in ['GET']:
             return True
@@ -42,13 +42,13 @@ class IsCompanyUser_or_Admin_or_ReadOnly(permissions.BasePermission):
             return True
         else:
             try:
-            if request.user.admin != None and request.method in ['GET', 'POST', 'PUT']:
-                return True
-        except AttributeError:            
-            if request.method in ['GET']:
-                return True
-            else:
-                return False
+                if request.user.admin != None and request.method in ['GET', 'POST', 'PUT']:
+                    return True
+            except AttributeError:            
+                if request.method in ['GET']:
+                    return True
+                else:   
+                    return False
 
 class IsUser(permissions.BasePermission):
     #class no 5
@@ -87,10 +87,10 @@ class IsRequest_or_isSafeOnlyMethod(permissions.BasePermission):
         else:
             return False
 
-class IsAdmin_or_Customer(permission.BasePermission):
+class IsAdmin_or_Customer(permissions.BasePermission):
     #class no 9
-    class has_object_permission(self, request, view, obj):
-        if obj.user == request.user and request.method in ['GET', 'POST', 'PUT']:
+    def has_object_permission(self, request, view, obj):
+        if request.user == obj.user and request.method in ['GET', 'POST', 'PUT']:
             return True
         else:
             try:
@@ -103,8 +103,17 @@ class IsAdmin_or_Customer(permission.BasePermission):
 
 class IsCustomer(permissions.BasePermission):
     #class 10
-    class has_object_permission(self, request, view, obj):
+    def has_object_permission(self, request, view, obj):
         if obj.user == request.user and request.method in ['GET', 'POST', 'PUT','DELETE']:
             return True
         else:
             return False
+
+class IsCompanyUser_or_ReadOnly_11(permissions.BasePermission):
+    #class 11
+    def has_object_permission(self, request, view, obj):
+        if obj.owner.user == request.user and request.method in ['GET', 'PUT', 'POST', 'DELETE']:
+            return True
+        else:
+            return False
+        
