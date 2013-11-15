@@ -118,6 +118,16 @@ def customer_app(request):
 	template = loader.get_template('customer_app.html')
 	context = RequestContext(request, {})
 	return HttpResponse(template.render(context))
+
+def customer_app(request):
+	template = loader.get_template('customer_app.html')
+	context = RequestContext(request, {})
+	return HttpResponse(template.render(context))
+
+def customer_confirm(request):
+	template = loader.get_template('customer_seats.html')
+	context = RequestContext(request, {})
+	return HttpResponse(template.render(context))
 	
 @csrf_protect
 def register(request):

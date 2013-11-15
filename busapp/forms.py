@@ -1,5 +1,6 @@
 import re
 from django import forms
+from django.forms.widgets import *
 from django.contrib.auth.models import User
 
 class RegistrationForm(forms.Form):
@@ -20,3 +21,9 @@ class RegistrationForm(forms.Form):
             if self.cleaned_data['password1'] != self.cleaned_data['password2']:
                 raise forms.ValidationError( "The two password fields did not match.")
         return self.cleaned_data
+
+class BusQueryForm(forms.Form):
+    def setplaces(sources,destinations):
+	source=forms.ChoiceField(widget=forms.Select, choices=sources)
+	destination=forms.ChoiceField(widget=forms.Select, choices=destinations)
+	date = forms.DateField(widget=SelectDateWidget)

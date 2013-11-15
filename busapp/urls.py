@@ -61,6 +61,7 @@ urlpatterns = format_suffix_patterns(urlpatterns)
 urlpatterns += patterns('busapp.views',
 	url(r'^$', views.index, name='index'),
 	url(r'^customer-app/$', views.customer_app, name='customer-app'),
+	url(r'^customer-confirm/$', views.customer_confirm, name='customer-confirm'),
 )
 urlpatterns += patterns('django.contrib.auth.views',
 		url(r'login/$', 'login', { 'template_name': 'login.html'},
