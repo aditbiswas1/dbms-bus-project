@@ -1,6 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+class Admin(models.Model):
+        user = models.OneToOneField(User)
+        
+
 class Company(models.Model):
 	#username associated to authenticate company
 	user = models.OneToOneField(User)
