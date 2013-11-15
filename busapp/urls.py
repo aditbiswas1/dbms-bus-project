@@ -64,7 +64,6 @@ urlpatterns += patterns('busapp.views',
 	url(r'^company-app/$', views.company_app, name='company-app'),
 	url(r'^customer-confirm/$', views.customer_confirm, name='customer-confirm'),
 )
-)
 urlpatterns += patterns('django.contrib.auth.views',
 		url(r'login/$', 'login', { 'template_name': 'login.html'},
 			name='bus_login'),
