@@ -107,7 +107,7 @@ class BusList(generics.ListCreateAPIView):
                 obj.owner = self.request.owner
 
 class BusDetail(generics.RetrieveUpdateDestroyAPIView):
-        #permission_classes = 11
+        #permission_classes = 11 (change it)
 	queryset = Bus.objects.all()
 	serializer_class = BusSerializer
         permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsCompanyUser_or_ReadOnly_11,)
@@ -198,15 +198,85 @@ def register(request):
 			password=form.cleaned_data['password1'],
 			email=form.cleaned_data['email']
 			)
-			return HttpResponseRedirect('/register/success/')
+			choice=form.cleaned_data['choice_field']
+			if choice=='1':
+				return HttpResponseRedirect('/register/company/'+user.username)
+			else:
+				return HttpResponseRedirect('/register/customer/'+user.username)
+		else:
+			variables = RequestContext(request, {
+			'form': form
+			})	
 	else:
 		form = RegistrationForm()
 		variables = RequestContext(request, {
 		'form': form
-		})
+		})		
 
 	return render_to_response(
 	'register.html',
+	variables,
+	)
+	
+def regcustomer(request,url):
+	if request.method == 'POST':
+		form = CustomerForm(request.POST)
+		if form.is_valid():
+			g=''
+			if form.cleaned_data['gender']=='1':
+				g='Male'
+			else:
+				g='Female'
+			customer = Customer.objects.create(
+			user=User.objects.filter(username=url.split('/')[0])[0],
+			fname=form.cleaned_data['fname'],
+			lname=form.cleaned_data['lname'],
+			phone_number=form.cleaned_data['phone'],
+			account_number=form.cleaned_data['bank'],
+			address=form.cleaned_data['address'],
+			dob=form.cleaned_data['dob'],
+			gender=g
+			)
+			#customer.save()
+			return HttpResponseRedirect('/register/success/')
+		else:
+			variables = RequestContext(request, {
+			'form': form
+			})
+	else:
+		form = CustomerForm()
+		variables = RequestContext(request, {
+		'form': form
+		})		
+
+	return render_to_response(
+	'regcustomer.html',
+	variables,
+	)
+	
+def regcompany(request,url):
+	if request.method == 'POST':
+		form = CompanyForm(request.POST)
+		if form.is_valid():
+			company = Company.objects.create(
+			user=User.objects.filter(username=url.split('/')[0])[0],
+			name=form.cleaned_data['name'],
+			account_number=form.cleaned_data['account_number'],
+			manager_phone=form.cleaned_data['manager_phone']
+			)
+			return HttpResponseRedirect('/register/success/')
+		else:
+			variables = RequestContext(request, {
+			'form': form
+			})
+	else:
+		form = CompanyForm()
+		variables = RequestContext(request, {
+		'form': form
+		})		
+
+	return render_to_response(
+	'regcompany.html',
 	variables,
 	)
 

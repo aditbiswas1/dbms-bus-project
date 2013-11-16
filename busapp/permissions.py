@@ -69,7 +69,7 @@ class IsCompany(permissions.BasePermission):
 class IfCustomer(permissions.BasePermission):
     #class no 7
     def has_object_permission(self, request, view, obj):
-        if request.user == obj.user and request.method in ['POST']:
+        if request.user == obj.customer.user and request.method in ['POST']:
             return True
         else:
             if request.user == obj.schedule.bus.owner.user and request.method in ['GET']:
@@ -82,7 +82,7 @@ class IsRequest_or_isSafeOnlyMethod(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         if request.user == obj.customer.user and request.method in ['GET']:
             return True
-        elif reqeust.user == obj.schedule.bus.owner.user and request.methi in ['GET']:
+        elif reqeust.user == obj.schedule.bus.owner.user and request.method in ['GET']:
             return True
         else:
             return False
@@ -115,5 +115,6 @@ class IsCompanyUser_or_ReadOnly_11(permissions.BasePermission):
         if obj.owner.user == request.user and request.method in ['GET', 'PUT', 'POST', 'DELETE']:
             return True
         else:
-            return False
+            return request.method in ['GET']
+
         

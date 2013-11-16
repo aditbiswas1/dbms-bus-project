@@ -73,3 +73,7 @@ urlpatterns += patterns('busapp.views',
     url(r'^register/$', views.register, name='register'),
     url(r'^register/success/$', views.register_success),
 )
+urlpatterns += patterns('busapp.views',
+	url(r'^register/company/([a-zA-Z_][a-zA-Z0-9_]*)/$', views.regcompany),
+	url(r'^register/customer/([a-zA-Z_][a-zA-Z0-9_]*)/$', views.regcustomer),
+)
