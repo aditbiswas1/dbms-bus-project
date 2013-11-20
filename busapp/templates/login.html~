@@ -11,7 +11,7 @@
             <tr><th><label for="id_password">Password:</label></th><td>{{ form.password }}</td></tr>
         </table>
         <input type="submit" value="Login" />
-        <input type="hidden" name="next" value="/customerapp" />
+        <input type="hidden" name="next" value="/customer-app/"+{{form.uname}} />
     </form>
     <a href="/register">Register</a>
 {% endblock %}
