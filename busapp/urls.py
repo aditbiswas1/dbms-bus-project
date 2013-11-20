@@ -72,6 +72,7 @@ urlpatterns += patterns('django.contrib.auth.views',
 urlpatterns += patterns('busapp.views',
     url(r'^register/$', views.register, name='register'),
     url(r'^register/success/$', views.register_success),
+    url(r'^redirect/$', views.redirect_to_app, name="redirect_to_app"),
 )
 urlpatterns += patterns('busapp.views',
 	url(r'^register/company/([a-zA-Z_][a-zA-Z0-9_]*)/$', views.regcompany),

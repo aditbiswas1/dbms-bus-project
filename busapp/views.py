@@ -182,6 +182,8 @@ def customer_app(request):
 
 def company_app(request):
 	template = loader.get_template('busapp/company_app.html')
+	context = RequestContext(request, {})
+	return HttpResponse(template.render(context))
 
 def customer_confirm(request):
 	template = loader.get_template('customer_seats.html')
@@ -282,7 +284,23 @@ def regcompany(request,url):
 
 def register_success(request):
 	return render_to_response('success.html',)
- 
+
+def redirect_to_app(request):
+	user = User.objects.get(username=request.user)
+	try:
+		company = user.company
+	except:
+		company = None
+	try:
+		customer = user.customer
+	except:
+		customer = None
+	
+	if company != None:
+		return HttpResponseRedirect('/company-app/')
+	elif customer != None:
+		return HttpResponseRedirect('/customer-app/')
+
 def logout_page(request):
 	logout(request)
 	return HttpResponseRedirect('/')
