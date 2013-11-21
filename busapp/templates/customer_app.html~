@@ -8,11 +8,11 @@
 <script type="text/javascript">
 	$(document).on("click","#source li",function(){
 		$('#sour').html(this.innerHTML);
-		console.log(this);
+		//console.log(this);
 	});
 	$(document).on("click","#destination li",function(){
 		$('#dest').html(this.innerHTML);
-		console.log(this);
+		//console.log(this);
 	});
 </script>
 <script type="text/javascript">
@@ -20,21 +20,59 @@
 
 		});
 		var Customers = Backbone.Collection.extend({
-			url: '/users/',
+			url: '/customers/',
 			model: Customer,
 			initialize: function(){
-				
-				this.fetch({success: function(data){
-					$("h2#header").html("Welcome to the Customer-side Bus Application!");
-					$("h3#header").html("Search for the bus you would like to book.");
-				},error: function(){
-					$('body').html("<h1 id='header'></h1>");
-					$('#header').append("An error occurred. Could not fetch data.");
-					console.log("fail");				
-				}});
 			},
 		});
+
+		var Schedule = Backbone.Model.extend({
+
+		});
+		var Schedules = Backbone.Collection.extend({
+			url: '/schedules/',
+			model: Schedule,
+			initialize: function(){
+			},
+		});
+
+		var Bus = Backbone.Model.extend({
+
+		});
+		var Buses = Backbone.Collection.extend({
+			url: '/buses/',
+			model: Bus,
+			initialize: function(){
+			},
+		});
+		
 		customers = new Customers();
+		buses = new Buses();
+		schedules = new Schedules();
+		curr="{{user.id}}";
+		customers.fetch({success: function(){
+			$('h1#header').html("Welcome to the Customer-side Bus Application!");
+			$('h3#header').html("You can create new transactions by using the buttons provided below.");
+			for(customer in customers.models)
+			{
+				if(customers.models[customer].attributes['user'] == curr)
+				{
+					curr=customers.models[customer];
+				}
+			}
+			buses.fetch({success: function(){
+				schedules.fetch({success: function(){
+					
+				},error: function(){
+					$('h1#header').html("Could not fetch schedule data.");	
+				}});
+			}, error: function(){
+				$('h1#header').html("Could not fetch bus data.");				
+			}
+			});
+		}, error: function(){
+			$('h1#header').html("Could not fetch customer data.");		
+		}});
 </script>
 <style>
 
@@ -115,7 +153,7 @@ td{
 	border:none;
 	border-radius:5px;
 	padding:5px;
-	margin-right:10px;
+	margin-right:20px;
 }
 
 </style>
@@ -131,7 +169,7 @@ td{
 					<a href="#" class="navbar-brand">Customer Bus Application</a>
 				</div>
 				<ul class="nav navbar-nav navbar-right">
-					<li><a href="{% url 'bus_login' %}">Customer Name</a></li>
+					<li><a href="{% url 'bus_login' %}">Welcome, {{ customer.fname }}</a></li>
 					<li><a href="{% url 'register' %}">Back to Main</a></li>
 				</ul>	
 			</div>
@@ -142,7 +180,7 @@ td{
 <h1 id="header"></h1>
 <h2 id="header"></h2>
 <h3 id="header"></h3>
-<form method="post" action="/customer-confirm/">{% csrf_token %}
+<form method="post" action=".">{% csrf_token %}
     <div class="btn-group" id="source">
     <span class="btn" id="sour">Source</span>
     <button class="btn dropdown-toggle" data-toggle="dropdown">

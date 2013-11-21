@@ -172,8 +172,10 @@ def index(request):
 	return HttpResponse(template.render(context))
 
 def customer_app(request):
+	session = User.objects.get(username=request.user)
+	customer = Customer.objects.get(user=session)
 	template = loader.get_template('customer_app.html')
-	context = RequestContext(request, {})
+	context = RequestContext(request, {'customer': customer, 'user': session})
 	return HttpResponse(template.render(context))
 
 def company_app(request):

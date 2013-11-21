@@ -57,7 +57,7 @@ class BusSerializer(serializers.ModelSerializer):
 	#discounts offered on this bus in percentage
 	discount = models.DecimalField(max_digits=4, decimal_places=2)
 	"""
-	owner = serializers.HyperlinkedRelatedField(view_name="company-detail")
+	owner = serializers.PrimaryKeyRelatedField()
 	class Meta:
 		model = Bus
 		fields = ('owner', 'route', 'rate', 'speed', 'capacity', 'discount')
