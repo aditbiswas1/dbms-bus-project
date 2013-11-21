@@ -19,28 +19,28 @@ class UserSerializer(serializers.ModelSerializer):
 #serialize universal routes
 class UniversalRouteSerializer(serializers.ModelSerializer):
 	route_stops = serializers.HyperlinkedRelatedField(read_only=True, view_name="routestop-detail")
-	source = serializers.HyperlinkedRelatedField( view_name="busstop-detail")
-	destination = serializers.HyperlinkedRelatedField(read_only=True, view_name="busstop-detail")
+	source = BusStopSerializer()
+	destination = BusStopSerializer()
 	class Meta:
 		model = UniversalRoute
 		fields = ('id', 'source', 'destination', 'route_stops')
 
 #serialize route stops
 class RouteStopSerializer(serializers.ModelSerializer):
-	route = serializers.HyperlinkedRelatedField( read_only=True, view_name="universal-route-detail")
-	bus_stop = serializers.HyperlinkedRelatedField( read_only=True, view_name="busstop-detail")
+	route = UniversalRouteSerializer()
+	bus_stop = BusStopSerializer()
 	class Meta:
 		model = RouteStop
 		fields = ('id', 'route', 'bus_stop', 'bus_stop_number', 'distance')
 
 #serialize company
 class CompanySerializer(serializers.ModelSerializer):
-	user = serializers.PrimaryKeyRelatedField()
+	user = serializers.PrimaryKeyRelatedField(read_only=True)
 	buses = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name="bus-detail")
 	class Meta:
 		model = Company
 		fields = ('id', 'user', 'name', 'manager_phone', 'buses')
-		owner = serializers.Field(source='owner.username')
+		
 
 class BusSerializer(serializers.ModelSerializer):
 	"""
@@ -57,7 +57,8 @@ class BusSerializer(serializers.ModelSerializer):
 	#discounts offered on this bus in percentage
 	discount = models.DecimalField(max_digits=4, decimal_places=2)
 	"""
-	owner = serializers.HyperlinkedRelatedField(view_name="company-detail")
+	owner = serializers.Field()
+	route = serializers.PrimaryKeyRelatedField()
 	class Meta:
 		model = Bus
 		fields = ('owner', 'route', 'rate', 'speed', 'capacity', 'discount')
@@ -71,7 +72,8 @@ class TransactionSerializer(serializers.ModelSerializer):
 
 #schedule serializer
 class ScheduleSerializer(serializers.ModelSerializer):
-        capacity = serializers.Field()
+	bus = serializers.PrimaryKeyRelatedField()
+	capacity = serializers.Field()
 	class Meta:
 		model = Schedule
 		fields = ('bus','datetime','capacity')

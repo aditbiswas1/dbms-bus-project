@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.db.models.signals import post_delete
 
 class Admin(models.Model):
         user = models.OneToOneField(User)
@@ -18,17 +17,6 @@ class Company(models.Model):
 
 	def __unicode__(self):
 		return self.name
-
-	"""
-	def deleting_customer(sender,**kwargs):
-                print "in deleting customer"
-                print kwargs
-                a = kwargs.get('instance')
-                print a.id
-                #User.objects.get(id=a.id).delete()
-                #Customer.ojects.get(user=kwargs.get('instance')).delete()
-	
-	post_delete.connect(deleting_customer,sender=User)"""
 
 class BusStop(models.Model):
 	#each busstop has an associated name
@@ -81,8 +69,8 @@ class Bus(models.Model):
 class Schedule(models.Model):
 	#the bus associated with the schedule
 	bus = models.ForeignKey(Bus)
-	#capacity of the bus
-	capacity = models.IntegerField()
+	#the capacity of the associated bus
+	capacity = models.IntegerField(default=0)
 	#the time of departure of the bus
 	datetime = models.DateTimeField()
 
@@ -106,7 +94,6 @@ class Customer(models.Model):
 	dob = models.DateField()
 	#gender
 	gender = models.CharField(max_length=6)
-
 
 class Transaction(models.Model):
 	#identified using transaction.id
