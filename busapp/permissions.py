@@ -104,7 +104,7 @@ class IsAdmin_or_Customer(permissions.BasePermission):
 class IsCustomer(permissions.BasePermission):
     #class 10
     def has_object_permission(self, request, view, obj):
-        if obj.user == request.user and request.method in ['GET', 'POST', 'PUT','DELETE']:
+        if obj.user == request.user and request.method in ['GET', 'POST', 'PUT']:
             return True
         else:
             return False

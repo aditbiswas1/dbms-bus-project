@@ -5,7 +5,10 @@ from django.forms.widgets import *
 
 from django.contrib.auth.models import User
 
+from django.contrib.auth.forms import AuthenticationForm
+
 from models import Company
+
 
 class RegistrationForm(forms.Form):
     username = forms.RegexField(regex=r'^\w+$', widget=forms.TextInput(attrs=dict(required=True, max_length=30)), label="Username" )

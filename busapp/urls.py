@@ -78,3 +78,8 @@ urlpatterns += patterns('busapp.views',
 	url(r'^register/company/([a-zA-Z_][a-zA-Z0-9_]*)/$', views.regcompany),
 	url(r'^register/customer/([a-zA-Z_][a-zA-Z0-9_]*)/$', views.regcustomer),
 )
+urlpatterns += patterns('busapp.views',
+                        url(r'^companyschedules/(?P<pk>[0-9]+)/$',views.scheduleList),
+                        url(r'^customertransactions/(?P<pk>[0-9]+)/$',views.customerTransaction),
+                        )
+

@@ -14,11 +14,20 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from django.http import HttpResponse
 from django.template import RequestContext, loader
+from rest_framework.renderers import JSONRenderer
 
 from busapp.models import Bus, BusStop, UniversalRoute, RouteStop, Company, Customer, Transaction, Schedule
 from busapp.permissions import *
 from django.core import serializers
 from datetime import *
+
+#serializing views
+class JSONResponse(HttpResponse):
+        def __init__(self,data,**kwargs):
+                content = JSONRenderer().render(data)
+                kwargs['content_type']='application/json'
+                super(JSONResponse,self).__init__(content,**kwargs)
+
 # BusStop Apis
 class BusStopList(generics.ListCreateAPIView):
 	"""
@@ -97,7 +106,7 @@ class CompanyDetail(generics.RetrieveUpdateDestroyAPIView):
 	serializer_class = CompanySerializer
 	permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsCompany,)
 	def pre_save(self,obj):
-                obj.owner = self.request.user
+                obj.user = self.request.user
 
 #Bus api
 class BusList(generics.ListCreateAPIView):
@@ -124,7 +133,8 @@ class TransactionList(generics.ListCreateAPIView):
 	permission_classes = (permissions.IsAuthenticatedOrReadOnly, IfCustomer,)
 
 	def pre_save(self, obj):
-                obj.owner = self.request.customer
+                obj.owner = obj.owner = User.objects.get(username=self.request.user).customer
+                obj.schedule.capacity-=1
 
 class TransactionDetail(generics.RetrieveUpdateDestroyAPIView):
         #permission_classes = 8
@@ -133,7 +143,8 @@ class TransactionDetail(generics.RetrieveUpdateDestroyAPIView):
 	permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsRequest_or_isSafeOnlyMethod,)
 
 	def pre_save(self, obj):
-                obj.owner = self.request.customer
+                obj.owner = self.obj.owner = User.objects.get(username=self.request.user).customer
+                obj.schedule.capacity-=1
 
 #Schedule api
 class ScheduleList(generics.ListCreateAPIView):
@@ -141,12 +152,20 @@ class ScheduleList(generics.ListCreateAPIView):
 	queryset = Schedule.objects.all()
 	serializer_class = ScheduleSerializer
         permission_classes = (permissions.IsAuthenticatedOrReadOnly, ScheduleHassCompanyUser_or_ReadOnly,)
+
+        def pre_save(self,obj):
+                print "working..."
+                obj.capacity=obj.bus.capacity
         
 class ScheduleDetail(generics.RetrieveUpdateDestroyAPIView):
         #permission_classes = 2
 	queryset = Schedule.objects.all()
 	serializer_class = ScheduleSerializer
 	permission_classes = (permissions.IsAuthenticatedOrReadOnly, ScheduleHassCompanyUser_or_ReadOnly,)
+
+	def pre_save(self,obj):
+                print "working..."
+                obj.capacity=obj.bus.capacity
 
 #Customers api
 class CustomerList(generics.ListCreateAPIView):
@@ -274,7 +293,30 @@ def regcustomer(request,url):
 	'regcustomer.html',
 	variables,
 	)
+
+def scheduleList(request,pk):
+        if request.method == 'GET':
+                companyId=pk
+                comObject = Company.objects.get(id=companyId)
+                buses = comObject.buses.iterator()
+                scList = []
+                sc_i = [ i.schedule_set.iterator() for i in buses]
+                for k in sc_i:
+                        for j in k:
+                                scList.append(ScheduleSerializer(j).data)
+                return JSONResponse(scList)
+                
 	
+def customerTransaction(request,pk):
+        if request.method == 'GET':
+                customId = pk
+                customObj = Customer.objects.get(id=customId)
+                trans = customObj.transaction_set.iterator()
+                ans = []
+                for k in trans:
+                        ans.append(TransactionSerializer(k).data)
+                return JSONResponse(ans)
+
 def regcompany(request,url):
 	if request.method == 'POST':
 		form = CompanyForm(request.POST)
@@ -323,3 +365,4 @@ def redirect_to_app(request):
 def logout_page(request):
 	logout(request)
 	return HttpResponseRedirect('/')
+

@@ -34,6 +34,13 @@ class RouteStopSerializer(serializers.ModelSerializer):
 		fields = ('id', 'route', 'bus_stop', 'bus_stop_number', 'distance')
 
 #serialize company
+class CompanySerializer(serializers.ModelSerializer):
+	user = serializers.PrimaryKeyRelatedField(read_only=True)
+	buses = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name="bus-detail")
+	class Meta:
+		model = Company
+		fields = ('id', 'user', 'name', 'manager_phone', 'buses')
+		
 
 class BusSerializer(serializers.ModelSerializer):
 	"""
@@ -55,6 +62,7 @@ class BusSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Bus
 		fields = ('id', 'owner', 'route', 'rate', 'speed', 'capacity', 'discount')
+		read_only_field = ('owner',)
 
 
 class CompanySerializer(serializers.ModelSerializer):
@@ -76,10 +84,12 @@ class TransactionSerializer(serializers.ModelSerializer):
 
 #schedule serializer
 class ScheduleSerializer(serializers.ModelSerializer):
+
+	capacity = serializers.Field()
 	bus = BusSerializer()
 	class Meta:
 		model = Schedule
-		fields = ('id','bus','datetime')
+		fields = ('id','bus','datetime','capacity')
 
 #serialize customers
 class CustomerSerializer(serializers.ModelSerializer):

@@ -69,6 +69,8 @@ class Bus(models.Model):
 class Schedule(models.Model):
 	#the bus associated with the schedule
 	bus = models.ForeignKey(Bus)
+	#the capacity of the associated bus
+	capacity = models.IntegerField(default=0)
 	#the time of departure of the bus
 	datetime = models.DateTimeField()
 
