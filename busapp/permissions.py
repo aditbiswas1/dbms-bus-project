@@ -18,7 +18,7 @@ class IsCompanyUser_or_ReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         if request.user == obj.owner.user and request.method in ['GET', 'POST', 'PUT']:
             return True
-        elif request.user !=obj.user and request.method in ['GET']:
+        elif request.user !=obj.owner.user and request.method in ['GET']:
             return True
         else:
             return False
@@ -29,7 +29,7 @@ class IsAdmin_or_ReadOnly(permissions.BasePermission):
         try:
             if request.user.admin != None and request.method in ['GET', 'POST', 'PUT','DELETE']:
                 return True
-        except AttributeError:            
+        except :            
             if request.method in ['GET']:
                 return True
             else:
@@ -118,3 +118,12 @@ class IsCompanyUser_or_ReadOnly_11(permissions.BasePermission):
             return request.method in ['GET']
 
         
+class ScheduleHassCompanyUser_or_ReadOnly(permissions.BasePermission):
+    #class no 2
+    def has_object_permission(self, request, view, obj):
+        if request.user == obj.bus.owner.user and request.method in ['GET', 'POST', 'PUT', 'DELETE']:
+            return True
+        elif request.user !=obj.bus.owner.user and request.method in ['GET']:
+            return True
+        else:
+            return False
