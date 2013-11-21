@@ -7,12 +7,30 @@
 <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
 <script type="text/javascript">
 	$(document).on("click","#source li",function(){
-		$('#sour').html(this.innerHTML);
-		//console.log(this);
+		var value=this.innerHTML;
+		var prev=$('#source input[type=text]').attr("value");
+		$('#source input[type=text]').attr("value",value);
+		$('#destination ul').html("");
+		if(prev != value)
+			$('#destination input[type=text]').attr("value","");
+		for(stop in routestops.models)
+		{
+			if(routestops.models[stop].attributes['bus_stop']['name']==value && routestops.models[stop].attributes['bus_stop_number']==1)
+			{
+				curroute = routestops.models[stop].attributes['route'];
+				
+				for(destop in routestops.models)
+				{
+					if(routestops.models[destop].attributes['route']['id'] == curroute['id'] && routestops.models[destop].attributes['bus_stop_number']!=1)
+					{
+						$("#destination ul").append("<li>" + routestops.models[destop].attributes['bus_stop']['name'] + "</li>");
+					}
+				}
+			} 
+		}
 	});
 	$(document).on("click","#destination li",function(){
-		$('#dest').html(this.innerHTML);
-		//console.log(this);
+		$('#destination input[type=text]').attr("value",this.innerHTML);
 	});
 </script>
 <script type="text/javascript">
@@ -45,11 +63,35 @@
 			initialize: function(){
 			},
 		});
+
+		var Route = Backbone.Model.extend({
+
+		});
+		var Routes = Backbone.Collection.extend({
+			url: '/universal/',
+			model: Route,
+			initialize: function(){
+			},
+		});
+
+		var RouteStop = Backbone.Model.extend({
+
+		});
+		var RouteStops = Backbone.Collection.extend({
+			url: '/routestops/',
+			model: RouteStop,
+			initialize: function(){
+			},
+		});
 		
 		customers = new Customers();
 		buses = new Buses();
 		schedules = new Schedules();
-		curr="{{user.id}}";
+		routes = new Routes();
+		routestops = new RouteStops();
+
+		curr={{user.id}};
+
 		customers.fetch({success: function(){
 			$('h1#header').html("Welcome to the Customer-side Bus Application!");
 			$('h3#header').html("You can create new transactions by using the buttons provided below.");
@@ -62,7 +104,18 @@
 			}
 			buses.fetch({success: function(){
 				schedules.fetch({success: function(){
-					
+					routes.fetch({success: function(){
+						routestops.fetch({success: function(){
+							for(route in routes.models)
+							{
+								$('#source ul').append("<li>" + routes.models[route].attributes['source']['name'] +"</li>");
+							}
+						}, error: function(){
+							$('h1#header').html("Could not fetch routestop data.");
+						}});
+					}, error: function(){
+						$('h1#header').html("Could not fetch route data.");
+					}});
 				},error: function(){
 					$('h1#header').html("Could not fetch schedule data.");	
 				}});
@@ -101,21 +154,33 @@ form{
 	margin-top:40px;
 }
 
-.btn-group{
+.input-group{
 	color:black;
 }
 
-.btn-group .btn,.dropdown-toggle{
+.input-group .btn,.dropdown-toggle{
 	background:transparent;
-	margin-right: 20px;
+	margin-right: 10px;
 	background:rgba(190,190,190,0.6);
 	color: white;
 	text-shadow: 1px 1px rgba(3,3,3,0.5);
 }
 
-.btn-group ul{
+.input-group ul{
 	padding:10px;
-	background:rgba(190,190,190,0.6);
+	background:rgba(12,50,12,0.9);
+	color:white;
+}
+
+.input-group{
+	width:300px;
+}
+
+.input-group input{
+	background:transparent;
+	color:white;
+	border: 1px rgba(255,255,255,1);
+	border-radius:5px;
 }
 
 li button{
@@ -177,32 +242,31 @@ td{
 		</nav>
 
 <div id="shade">
+<br/>
 <h1 id="header"></h1>
 <h2 id="header"></h2>
 <h3 id="header"></h3>
-<form method="post" action=".">{% csrf_token %}
-    <div class="btn-group" id="source">
-    <span class="btn" id="sour">Source</span>
-    <button class="btn dropdown-toggle" data-toggle="dropdown">
-    <span class="caret"></span>
-    </button>
-    <ul class="dropdown-menu">
-    <li>source 1</li>
-	<li>source 2</li>
-    </ul>
+<form method="get" action=".">{% csrf_token %}
+    <div class="input-group" id="source">
+      <div class="input-group-btn">
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Source <span class="caret"></span></button>
+        <ul class="dropdown-menu">
+        </ul>
+      </div>
+      <input type="text" class="form-control" id="sour" name="source" placeholder="--Select source--">
     </div>
-	<div class="btn-group" id="destination">
-    <span class="btn" id="dest">Destination</span>
-    <button class="btn dropdown-toggle" data-toggle="dropdown">
-    <span class="caret"></span>
-    </button>
-    <ul class="dropdown-menu">
-    <li>destination 1</li>
-	<li>destination 2</li>
-    </ul>
+	<br/>
+	<div class="input-group" id="destination">
+      <div class="input-group-btn">
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Destination <span class="caret"></span></button>
+        <ul class="dropdown-menu">
+        </ul>
+      </div>
+      <input type="text" class="form-control" id="dest" name="destination" placeholder="--Select destination--">
     </div>
+	<br/>
 
-<input type="date" id="dp" placeholder="--Select date--">
+<input type="date" id="dp" placeholder="--Select date--" name="date">
 
         <input type="submit" class="btn btn-success btn-mid" value="Submit" />
     </form>
@@ -217,6 +281,17 @@ td{
 	<td>Available Seats</td>
 	<td>Time</td>
 	</tr>
+	{% for bus in buses %}
+	<tr>
+	<td><a href="/customer-confirm/">{{bus.id}}</a></td>
+	<td>{{bus.source}}</td>
+	<td>{{bus.destination}}</td>
+	<td>{{bus.amount}}</td>
+	<td>{{bus.remaining}}</td>
+	<td>{{bus.time}}</td>
+	</tr>
+	{% endfor %}
 	</table>
+{{ error }}
 </div>
 </div>

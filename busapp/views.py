@@ -18,6 +18,7 @@ from django.template import RequestContext, loader
 from busapp.models import Bus, BusStop, UniversalRoute, RouteStop, Company, Customer, Transaction, Schedule
 from busapp.permissions import *
 from django.core import serializers
+from datetime import *
 # BusStop Apis
 class BusStopList(generics.ListCreateAPIView):
 	"""
@@ -172,10 +173,28 @@ def index(request):
 	return HttpResponse(template.render(context))
 
 def customer_app(request):
+	buses = []
+	error = ""
+	if 'source' in request.GET and 'destination' in request.GET and 'date' in request.GET and request.GET['source'] and request.GET['destination'] and request.GET['date']:
+		src = request.GET['source']
+		dest = request.GET['destination']
+		date = request.GET['date']
+		routeswithsrc=UniversalRoute.objects.filter(source=BusStop.objects.get(name=src))
+		routes=[]
+		for rt in routeswithsrc:
+			for stop in RouteStop.objects.filter(route=rt):
+				if stop.bus_stop.name == dest:
+					for schedule in Schedule.objects.filter():
+						if date == unicode(schedule.datetime.date()):
+							newdata = {"id":schedule.bus.id,"source":src,"destination":dest,"amount":(schedule.bus.rate*stop.distance),"remaining":schedule.bus.capacity,"time":schedule.datetime.time()}
+							if schedule.bus.route == rt and not stop.bus_stop.name == src and not newdata in buses:
+								buses.append(newdata)
+	elif ('source' in request.GET and (not request.GET['source'] or request.GET['source']=='')) or ('destination' in request.GET and (not request.GET['destination'] or request.GET['destination']=='')) or ('date' in request.GET and (not request.GET['date'] or request.GET['date']=='')):
+		error = "Incomplete details."		
 	session = User.objects.get(username=request.user)
 	customer = Customer.objects.get(user=session)
 	template = loader.get_template('customer_app.html')
-	context = RequestContext(request, {'customer': customer, 'user': session})
+	context = RequestContext(request, {'customer': customer, 'user': session , 'buses': buses, 'error': error})
 	return HttpResponse(template.render(context))
 
 def company_app(request):
