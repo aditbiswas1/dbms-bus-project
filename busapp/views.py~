@@ -14,11 +14,18 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from django.http import HttpResponse
 from django.template import RequestContext, loader
+from rest_framework.renderers import JSONRenderer
 
 from busapp.models import Bus, BusStop, UniversalRoute, RouteStop, Company, Customer, Transaction, Schedule
 from busapp.permissions import *
 from django.core import serializers
 from datetime import *
+class JSONResponse(HttpResponse):
+        def __init__(self,data,**kwargs):
+                content = JSONRenderer().render(data)
+                kwargs['content_type']='application/json'
+                super(JSONResponse,self).__init__(content,**kwargs)
+
 # BusStop Apis
 class BusStopList(generics.ListCreateAPIView):
 	"""
@@ -89,7 +96,7 @@ class CompanyList(generics.ListCreateAPIView):
 	permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 	permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsCompanyUser_or_Admin_or_ReadOnly,)
         def pre_save(self,obj):
-                obj.owner = self.request.user
+                obj.user = self.request.user
 
 class CompanyDetail(generics.RetrieveUpdateDestroyAPIView):
         #permission_classes = 6
@@ -97,7 +104,7 @@ class CompanyDetail(generics.RetrieveUpdateDestroyAPIView):
 	serializer_class = CompanySerializer
 	permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsCompany,)
 	def pre_save(self,obj):
-                obj.owner = self.request.user
+                obj.user = self.request.user
 
 #Bus api
 class BusList(generics.ListCreateAPIView):
@@ -125,6 +132,7 @@ class TransactionList(generics.ListCreateAPIView):
 
 	def pre_save(self, obj):
                 obj.owner = self.request.customer
+                obj.schedule.capacity-=1
 
 class TransactionDetail(generics.RetrieveUpdateDestroyAPIView):
         #permission_classes = 8
@@ -134,6 +142,7 @@ class TransactionDetail(generics.RetrieveUpdateDestroyAPIView):
 
 	def pre_save(self, obj):
                 obj.owner = self.request.customer
+                obj.schedule.capacity-=1
 
 #Schedule api
 class ScheduleList(generics.ListCreateAPIView):
@@ -141,12 +150,20 @@ class ScheduleList(generics.ListCreateAPIView):
 	queryset = Schedule.objects.all()
 	serializer_class = ScheduleSerializer
         permission_classes = (permissions.IsAuthenticatedOrReadOnly, ScheduleHassCompanyUser_or_ReadOnly,)
+
+        def pre_save(self,obj):
+                print "working..."
+                obj.capacity=obj.bus.capacity
         
 class ScheduleDetail(generics.RetrieveUpdateDestroyAPIView):
         #permission_classes = 2
 	queryset = Schedule.objects.all()
 	serializer_class = ScheduleSerializer
 	permission_classes = (permissions.IsAuthenticatedOrReadOnly, ScheduleHassCompanyUser_or_ReadOnly,)
+
+	def pre_save(self,obj):
+                print "working..."
+                obj.capacity=obj.bus.capacity
 
 #Customers api
 class CustomerList(generics.ListCreateAPIView):
@@ -186,12 +203,25 @@ def customer_app(request):
 				if stop.bus_stop.name == dest:
 					for sched in Schedule.objects.filter():
 						if date == unicode(sched.datetime.date()):
-							newdata = {"year":sched.datetime.date().year,"month":sched.datetime.date().month,"day":sched.datetime.date().day,"source":src,"destination":dest,"amount":(sched.bus.rate*stop.distance),"remaining":sched.bus.capacity,"time":sched.datetime.time(),"sid":sched.id}
+							newdata = {"year":sched.datetime.date().year,"month":sched.datetime.date().month,"day":sched.datetime.date().day,"source":src,"destination":dest,"amount":(sched.bus.rate*stop.distance),"remaining":sched.capacity,"time":sched.datetime.time(),"sid":sched.id,"company":sched.bus.owner,"discount":(sched.bus.rate*stop.distance*(100-sched.bus.discount)/100)}
 							if sched.bus.route == rt and not stop.bus_stop.name == src and not newdata in buses:
 								buses.append(newdata)
 
 	elif ('source' in request.GET and (not request.GET['source'] or request.GET['source']=='')) or ('destination' in request.GET and (not request.GET['destination'] or request.GET['destination']=='')) or ('date' in request.GET and (not request.GET['date'] or request.GET['date']=='')):
-		error = "Incomplete details."		
+		error = "Incomplete details."
+	elif 'customer' in request.POST and 'schedule' in request.POST and 'cost' in request.POST and 'seat' in request.POST and request.POST['customer'] and request.POST['cost'] and request.POST['seat']:
+		cus = Customer.objects.get(user=request.POST['customer']).fname
+		sch = Schedule.objects.get(id=request.POST['schedule'])
+		tcost = request.POST['cost']
+		tseat = request.POST['seat']
+		transaction = Transaction.objects.create(
+			customer = cus,
+			schedule = sch,
+			cost = tcost,
+			seat = tseat
+			)
+		print transaction
+
 	session = User.objects.get(username=request.user)
 	customer = Customer.objects.get(user=session)
 	template = loader.get_template('customer_app.html')
@@ -274,6 +304,19 @@ def regcustomer(request,url):
 	'regcustomer.html',
 	variables,
 	)
+
+def scheduleList(request,pk):
+        if request.method == 'GET':
+                companyId=pk
+                comObject = Company.objects.get(id=companyId)
+                buses = comObject.buses.iterator()
+                scList = []
+                sc_i = [ i.schedule_set.iterator() for i in buses]
+                for k in sc_i:
+                        for j in k:
+                                scList.append(ScheduleSerializer(j).data)
+                return JSONResponse(scList)
+                
 	
 def regcompany(request,url):
 	if request.method == 'POST':

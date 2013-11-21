@@ -9,24 +9,25 @@
 	//Random stuff
 	
 	$(document).ready(function(){
-		$("#p2").hide();	
+		$("#p2").hide();
 	});
 </script>
 
 <script type="text/javascript">
 	//Widget-associated event handlers for p2
 	
+	$('#postdata').html("");
+
 	$(document).on("click","#seats li",function(){
 		$('#seats input[type=text]').attr("value",this.innerHTML);
-	});
-
-	$(document).on("click","#seats ul",function(){
-		totalcapacity=currentschedule.attributes['bus']['capacity'];
-		console.log(totalcapacity);
-	});
-
-	$(document).on("change",this,function(){
-			
+		$('#table1 #items').html("<td>"+ currentschedule.attributes['datetime'] + "</td><td>" + currentschedule.attributes['bus']['owner']['name'] + "</td><td>" + currentschedule.attributes['bus']['route']['source']['name'] + "</td><td>" + currentschedule.attributes['bus']['route']['destination']['name'] + "</td><td>" + (amount) + "</td>");
+	
+		$('#postdata').append('<input type="text" name="customer" value=' + curr.attributes['user'] + '>');
+		$('#postdata').append('<input type="text" name="schedule" value=' + currentschedule.id + '>');
+		$('#postdata').append('<input type="text" name="cost" value=' + amount + '>');
+		$('#postdata').append('<input type="text" name="seat" value=' + this.innerHTML + '>');
+		
+		$('#postdata').hide();
 	});
 
 </script>
@@ -42,7 +43,7 @@
 		if(prev != value)
 			$('#destination input[type=text]').attr("value","");
 		for(stop in routestops.models)
-		{
+		{	
 			if(routestops.models[stop].attributes['bus_stop']['name']==value && routestops.models[stop].attributes['bus_stop_number']==1)
 			{
 				curroute = routestops.models[stop].attributes['route'];
@@ -73,11 +74,44 @@
 	$(document).on("click","#table tr.items",function(){
 		$('#p2').show();
 		$('#p1').hide();
+		selectedli=$(this);
 		for(schedule in schedules.models)
 		{
 			if(schedules.models[schedule].id == $(this).attr("value"))
 			{
 				currentschedule = schedules.models[schedule];
+				total = currentschedule.attributes['bus']['capacity'];
+				amount = $(this).attr("amount")
+
+				filled = []
+				for(i=0;i<total;i++)
+				{
+					filled[i]=0;
+				}
+
+				//Check transactions to see if the seats under the current schedule are filled
+				console.log("Transactions:");
+				console.log(tran);
+
+				$('#seats ul').html("");
+
+				schedstr = currentschedule.attributes['bus'].toString() +": " + currentschedule.attributes['datetime'].toString();
+				
+				for(transaction in tran.models)
+				{
+					console.log(tran.models[transaction].attributes['schedule']);
+					if(tran.models[transaction].attributes['schedule'] == currentschedule.id)
+					{
+						filled[tran.models[transaction].attributes['seat']-1]=1;
+					}
+				}
+				for(i=0;i<total;i++)
+				{
+					if(filled[i]==0)
+					{
+						$('#seats ul').append("<li>" + (i+1) + "</li>");
+					}
+				}
 			}
 		}
 	});
@@ -237,6 +271,8 @@ form{
 	padding:10px;
 	background:rgba(12,50,12,0.9);
 	color:white;
+	overflow:scroll;
+	height:80px;
 }
 
 .input-group{
@@ -309,8 +345,8 @@ td{
 					<a href="#" class="navbar-brand">Customer Bus Application</a>
 				</div>
 				<ul class="nav navbar-nav navbar-right">
-					<li><a href="{% url 'bus_login' %}">Welcome, {{ customer.fname }}</a></li>
-					<li><a href="{% url 'register' %}">Back to Main</a></li>
+					<li><a href="#">Welcome, {{ customer.fname }}</a></li>
+					<li><a href="{% url 'bus_logout' %}">Logout</a></li>
 				</ul>	
 			</div>
 			
@@ -351,15 +387,17 @@ td{
 	<table id="table">
 	<tr>
 	<th>Date</th>
+	<th>Company</th>
 	<th>Source</th>
 	<th>Destination</th>
-	<th>Amount</th>
+	<th>Total</th>
 	<th>Available Seats</th>
 	<th>Time</th>
 	</tr>
 	{% for bus in buses %}
-	<tr class="items" value={{bus.sid}}>
+	<tr class="items" value={{bus.sid}} amount={{bus.discount}}>
 	<td>{{bus.year}}-{{bus.month}}-{{bus.day}}</td>
+	<td>{{bus.company}}</td>
 	<td>{{bus.source}}</td>
 	<td>{{bus.destination}}</td>
 	<td>{{bus.amount}}</td>
@@ -372,7 +410,7 @@ td{
 </div>
 </div>
 <div id="p2">
-<form method="post" action="#">{% csrf_token %}
+<form method="post" action=".">{% csrf_token %}
     
 <div class="input-group" id="seats">
       <div class="input-group-btn">
@@ -382,21 +420,24 @@ td{
       </div>
       <input type="text" class="form-control" id="seat" name="seats" placeholder="--Select seats--" readonly>
     </div>
+	
+<div id="postdata">
+</div>
 	<br/>
 <input type="submit" class="btn btn-success btn-mid" value="Confirm" />
     </form>
 
 	<div id='result1'>
 	<table id="table1">
-	<th>
-	<td>Date</td>
-	<td>BusID</td>
-	<td>Source</td>
-	<td>Destination</td>
-	<td>Amount</td>
-	<td>Available Seats</td>
-	<td>Time</td>
-	</th>
+	<tr>
+	<th>Date & Time</th>
+	<th>Company</th>
+	<th>Source</th>
+	<th>Destination</th>
+	<th>Total</th>
+	</tr>
+	<tr id="items">
+	</tr>
 	</table>
 </div>
 

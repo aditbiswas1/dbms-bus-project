@@ -57,7 +57,7 @@ class BusSerializer(serializers.ModelSerializer):
 	#discounts offered on this bus in percentage
 	discount = models.DecimalField(max_digits=4, decimal_places=2)
 	"""
-	owner = serializers.PrimaryKeyRelatedField()
+	owner = CompanySerializer()
 	route = UniversalRouteSerializer()
 	class Meta:
 		model = Bus
@@ -75,7 +75,7 @@ class ScheduleSerializer(serializers.ModelSerializer):
 	bus = BusSerializer()
 	class Meta:
 		model = Schedule
-		fields = ('bus','datetime')
+		fields = ('id','bus','datetime','capacity')
 
 #serialize customers
 class CustomerSerializer(serializers.ModelSerializer):
