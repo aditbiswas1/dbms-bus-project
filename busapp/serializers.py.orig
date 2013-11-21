@@ -35,12 +35,12 @@ class RouteStopSerializer(serializers.ModelSerializer):
 
 #serialize company
 class CompanySerializer(serializers.ModelSerializer):
-	user = serializers.PrimaryKeyRelatedField(read_only=True)
+	user = serializers.PrimaryKeyRelatedField()
 	buses = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name="bus-detail")
 	class Meta:
 		model = Company
 		fields = ('id', 'user', 'name', 'manager_phone', 'buses')
-		
+		owner = serializers.Field(source='owner.username')
 
 class BusSerializer(serializers.ModelSerializer):
 	"""
@@ -58,15 +58,26 @@ class BusSerializer(serializers.ModelSerializer):
 	discount = models.DecimalField(max_digits=4, decimal_places=2)
 	"""
 <<<<<<< HEAD
-	owner = serializers.PrimaryKeyRelatedField()
-	route = UniversalRouteSerializer()
+	owner = CompanySerializer()
 =======
-	owner = serializers.Field()
-	route = serializers.PrimaryKeyRelatedField()
->>>>>>> aayush
+	owner = serializers.PrimaryKeyRelatedField()
+>>>>>>> 820e018eea2bcc7cf27269a0ea6bfa1d5faedbb0
+	route = UniversalRouteSerializer()
 	class Meta:
 		model = Bus
-		fields = ('owner', 'route', 'rate', 'speed', 'capacity', 'discount')
+		fields = ('id', 'owner', 'route', 'rate', 'speed', 'capacity', 'discount')
+		read_only_field = ('owner',)
+
+
+class CompanySerializer(serializers.ModelSerializer):
+	user = serializers.PrimaryKeyRelatedField()
+	buses = BusSerializer(many=True)
+	# buses = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name="bus-detail")
+	class Meta:
+		model = Company
+		fields = ('id', 'user', 'name', 'manager_phone', 'buses')
+		owner = serializers.Field(source='owner.username')
+
 
 #transaction Serializer
 class TransactionSerializer(serializers.ModelSerializer):
@@ -78,17 +89,14 @@ class TransactionSerializer(serializers.ModelSerializer):
 #schedule serializer
 class ScheduleSerializer(serializers.ModelSerializer):
 <<<<<<< HEAD
+=======
+
+	capacity = serializers.Field()
+>>>>>>> 820e018eea2bcc7cf27269a0ea6bfa1d5faedbb0
 	bus = BusSerializer()
 	class Meta:
 		model = Schedule
-		fields = ('id','bus','datetime')
-=======
-	bus = serializers.PrimaryKeyRelatedField()
-	capacity = serializers.Field()
-	class Meta:
-		model = Schedule
-		fields = ('bus','datetime','capacity')
->>>>>>> aayush
+		fields = ('id','bus','datetime','capacity')
 
 #serialize customers
 class CustomerSerializer(serializers.ModelSerializer):

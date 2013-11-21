@@ -22,13 +22,15 @@ from django.core import serializers
 from datetime import *
 <<<<<<< HEAD
 =======
+
+#serializing views
+>>>>>>> 820e018eea2bcc7cf27269a0ea6bfa1d5faedbb0
 class JSONResponse(HttpResponse):
         def __init__(self,data,**kwargs):
                 content = JSONRenderer().render(data)
                 kwargs['content_type']='application/json'
                 super(JSONResponse,self).__init__(content,**kwargs)
 
->>>>>>> aayush
 # BusStop Apis
 class BusStopList(generics.ListCreateAPIView):
 	"""
@@ -98,8 +100,8 @@ class CompanyList(generics.ListCreateAPIView):
 	serializer_class = CompanySerializer
 	permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 	permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsCompanyUser_or_Admin_or_ReadOnly,)
-        def pre_save(self,obj):
-                obj.user = self.request.user
+	def pre_save(self,obj):
+		obj.owner = self.request.user
 
 class CompanyDetail(generics.RetrieveUpdateDestroyAPIView):
         #permission_classes = 6
@@ -134,7 +136,7 @@ class TransactionList(generics.ListCreateAPIView):
 	permission_classes = (permissions.IsAuthenticatedOrReadOnly, IfCustomer,)
 
 	def pre_save(self, obj):
-                obj.owner = self.request.customer
+                obj.owner = obj.owner = User.objects.get(username=self.request.user).customer
                 obj.schedule.capacity-=1
 
 class TransactionDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -144,7 +146,7 @@ class TransactionDetail(generics.RetrieveUpdateDestroyAPIView):
 	permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsRequest_or_isSafeOnlyMethod,)
 
 	def pre_save(self, obj):
-                obj.owner = self.request.customer
+                obj.owner = self.obj.owner = User.objects.get(username=self.request.user).customer
                 obj.schedule.capacity-=1
 
 #Schedule api
@@ -153,26 +155,20 @@ class ScheduleList(generics.ListCreateAPIView):
 	queryset = Schedule.objects.all()
 	serializer_class = ScheduleSerializer
         permission_classes = (permissions.IsAuthenticatedOrReadOnly, ScheduleHassCompanyUser_or_ReadOnly,)
-<<<<<<< HEAD
-=======
 
         def pre_save(self,obj):
                 print "working..."
                 obj.capacity=obj.bus.capacity
->>>>>>> aayush
         
 class ScheduleDetail(generics.RetrieveUpdateDestroyAPIView):
         #permission_classes = 2
 	queryset = Schedule.objects.all()
 	serializer_class = ScheduleSerializer
 	permission_classes = (permissions.IsAuthenticatedOrReadOnly, ScheduleHassCompanyUser_or_ReadOnly,)
-<<<<<<< HEAD
-=======
 
 	def pre_save(self,obj):
                 print "working..."
                 obj.capacity=obj.bus.capacity
->>>>>>> aayush
 
 #Customers api
 class CustomerList(generics.ListCreateAPIView):
@@ -210,22 +206,26 @@ def customer_app(request):
 		for rt in routeswithsrc:
 			for stop in RouteStop.objects.filter(route=rt):
 				if stop.bus_stop.name == dest:
-<<<<<<< HEAD
 					for sched in Schedule.objects.filter():
 						if date == unicode(sched.datetime.date()):
-							newdata = {"year":sched.datetime.date().year,"month":sched.datetime.date().month,"day":sched.datetime.date().day,"source":src,"destination":dest,"amount":(sched.bus.rate*stop.distance),"remaining":sched.bus.capacity,"time":sched.datetime.time(),"sid":sched.id}
+							newdata = {"year":sched.datetime.date().year,"month":sched.datetime.date().month,"day":sched.datetime.date().day,"source":src,"destination":dest,"amount":(sched.bus.rate*stop.distance),"remaining":sched.capacity,"time":sched.datetime.time(),"sid":sched.id,"company":sched.bus.owner,"discount":(sched.bus.rate*stop.distance*(100-sched.bus.discount)/100)}
 							if sched.bus.route == rt and not stop.bus_stop.name == src and not newdata in buses:
 								buses.append(newdata)
 
-=======
-					for schedule in Schedule.objects.filter():
-						if date == unicode(schedule.datetime.date()):
-							newdata = {"id":schedule.bus.id,"source":src,"destination":dest,"amount":(schedule.bus.rate*stop.distance),"remaining":schedule.bus.capacity,"time":schedule.datetime.time()}
-							if schedule.bus.route == rt and not stop.bus_stop.name == src and not newdata in buses:
-								buses.append(newdata)
->>>>>>> aayush
 	elif ('source' in request.GET and (not request.GET['source'] or request.GET['source']=='')) or ('destination' in request.GET and (not request.GET['destination'] or request.GET['destination']=='')) or ('date' in request.GET and (not request.GET['date'] or request.GET['date']=='')):
-		error = "Incomplete details."		
+		error = "Incomplete details."
+	elif 'customer' in request.POST and 'schedule' in request.POST and 'cost' in request.POST and 'seat' in request.POST and request.POST['customer'] and request.POST['cost'] and request.POST['seat']:
+		cus = Customer.objects.get(user=request.POST['customer'])
+		sch = Schedule.objects.get(id=request.POST['schedule'])
+		tcost = request.POST['cost']
+		tseat = request.POST['seat']
+		transaction = Transaction.objects.create(
+			customer = cus,
+			schedule = sch,
+			cost = tcost,
+			seat = tseat
+			)
+
 	session = User.objects.get(username=request.user)
 	customer = Customer.objects.get(user=session)
 	template = loader.get_template('customer_app.html')
@@ -322,6 +322,16 @@ def scheduleList(request,pk):
                 return JSONResponse(scList)
                 
 	
+def customerTransaction(request,pk):
+        if request.method == 'GET':
+                customId = pk
+                customObj = Customer.objects.get(id=customId)
+                trans = customObj.transaction_set.iterator()
+                ans = []
+                for k in trans:
+                        ans.append(TransactionSerializer(k).data)
+                return JSONResponse(ans)
+
 def regcompany(request,url):
 	if request.method == 'POST':
 		form = CompanyForm(request.POST)
@@ -370,3 +380,4 @@ def redirect_to_app(request):
 def logout_page(request):
 	logout(request)
 	return HttpResponseRedirect('/')
+
