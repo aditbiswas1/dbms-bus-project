@@ -18,8 +18,8 @@ class UserSerializer(serializers.ModelSerializer):
 
 #serialize universal routes
 class UniversalRouteSerializer(serializers.ModelSerializer):
-	route_stops = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name="routestop-detail")
-	source = serializers.HyperlinkedRelatedField(read_only=True, view_name="busstop-detail")
+	route_stops = serializers.HyperlinkedRelatedField(read_only=True, view_name="routestop-detail")
+	source = serializers.HyperlinkedRelatedField( view_name="busstop-detail")
 	destination = serializers.HyperlinkedRelatedField(read_only=True, view_name="busstop-detail")
 	class Meta:
 		model = UniversalRoute
