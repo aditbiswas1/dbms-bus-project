@@ -184,11 +184,12 @@ def customer_app(request):
 		for rt in routeswithsrc:
 			for stop in RouteStop.objects.filter(route=rt):
 				if stop.bus_stop.name == dest:
-					for schedule in Schedule.objects.filter():
-						if date == unicode(schedule.datetime.date()):
-							newdata = {"id":schedule.bus.id,"source":src,"destination":dest,"amount":(schedule.bus.rate*stop.distance),"remaining":schedule.bus.capacity,"time":schedule.datetime.time()}
-							if schedule.bus.route == rt and not stop.bus_stop.name == src and not newdata in buses:
+					for sched in Schedule.objects.filter():
+						if date == unicode(sched.datetime.date()):
+							newdata = {"year":sched.datetime.date().year,"month":sched.datetime.date().month,"day":sched.datetime.date().day,"source":src,"destination":dest,"amount":(sched.bus.rate*stop.distance),"remaining":sched.bus.capacity,"time":sched.datetime.time(),"sid":sched.id}
+							if sched.bus.route == rt and not stop.bus_stop.name == src and not newdata in buses:
 								buses.append(newdata)
+
 	elif ('source' in request.GET and (not request.GET['source'] or request.GET['source']=='')) or ('destination' in request.GET and (not request.GET['destination'] or request.GET['destination']=='')) or ('date' in request.GET and (not request.GET['date'] or request.GET['date']=='')):
 		error = "Incomplete details."		
 	session = User.objects.get(username=request.user)

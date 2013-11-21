@@ -58,6 +58,7 @@ class BusSerializer(serializers.ModelSerializer):
 	discount = models.DecimalField(max_digits=4, decimal_places=2)
 	"""
 	owner = serializers.PrimaryKeyRelatedField()
+	route = UniversalRouteSerializer()
 	class Meta:
 		model = Bus
 		fields = ('owner', 'route', 'rate', 'speed', 'capacity', 'discount')

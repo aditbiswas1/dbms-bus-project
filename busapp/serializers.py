@@ -75,7 +75,7 @@ class ScheduleSerializer(serializers.ModelSerializer):
 	bus = BusSerializer()
 	class Meta:
 		model = Schedule
-		fields = ('bus','datetime')
+		fields = ('id','bus','datetime')
 
 #serialize customers
 class CustomerSerializer(serializers.ModelSerializer):
