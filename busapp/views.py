@@ -88,8 +88,8 @@ class CompanyList(generics.ListCreateAPIView):
 	serializer_class = CompanySerializer
 	permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 	permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsCompanyUser_or_Admin_or_ReadOnly,)
-        def pre_save(self,obj):
-                obj.owner = self.request.user
+	def pre_save(self,obj):
+		obj.owner = self.request.user
 
 class CompanyDetail(generics.RetrieveUpdateDestroyAPIView):
         #permission_classes = 6
