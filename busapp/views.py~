@@ -104,7 +104,7 @@ class BusList(generics.ListCreateAPIView):
 	serializer_class = BusSerializer
         permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsCompanyUser_or_ReadOnly,)
 	def pre_save(self, obj):
-                obj.owner = self.request.user
+                obj.owner = User.objects.get(username=self.request.user).company
 
 class BusDetail(generics.RetrieveUpdateDestroyAPIView):
         #permission_classes = 11 (change it)
@@ -112,7 +112,8 @@ class BusDetail(generics.RetrieveUpdateDestroyAPIView):
 	serializer_class = BusSerializer
         permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsCompanyUser_or_ReadOnly_11,)
 	def pre_save(self, obj):
-                obj.owner = self.request.owner
+                user = User.objects.get(username=self.request.user)
+		obj.owner = user.company
 
 #Transaction api
 class TransactionList(generics.ListCreateAPIView):
