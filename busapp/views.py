@@ -20,6 +20,8 @@ from busapp.models import Bus, BusStop, UniversalRoute, RouteStop, Company, Cust
 from busapp.permissions import *
 from django.core import serializers
 from datetime import *
+
+#serializing views
 class JSONResponse(HttpResponse):
         def __init__(self,data,**kwargs):
                 content = JSONRenderer().render(data)
@@ -131,7 +133,7 @@ class TransactionList(generics.ListCreateAPIView):
 	permission_classes = (permissions.IsAuthenticatedOrReadOnly, IfCustomer,)
 
 	def pre_save(self, obj):
-                obj.owner = self.request.customer
+                obj.owner = obj.owner = User.objects.get(username=self.request.user).customer
                 obj.schedule.capacity-=1
 
 class TransactionDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -141,7 +143,7 @@ class TransactionDetail(generics.RetrieveUpdateDestroyAPIView):
 	permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsRequest_or_isSafeOnlyMethod,)
 
 	def pre_save(self, obj):
-                obj.owner = self.request.customer
+                obj.owner = self.obj.owner = User.objects.get(username=self.request.user).customer
                 obj.schedule.capacity-=1
 
 #Schedule api
@@ -304,6 +306,16 @@ def scheduleList(request,pk):
                 return JSONResponse(scList)
                 
 	
+def customerTransaction(request,pk):
+        if request.method == 'GET':
+                customId = pk
+                customObj = Customer.objects.get(id=customId)
+                trans = customObj.transaction_set.iterator()
+                ans = []
+                for k in trans:
+                        ans.append(TransactionSerializer(k).data)
+                return JSONResponse(ans)
+
 def regcompany(request,url):
 	if request.method == 'POST':
 		form = CompanyForm(request.POST)
@@ -352,3 +364,4 @@ def redirect_to_app(request):
 def logout_page(request):
 	logout(request)
 	return HttpResponseRedirect('/')
+

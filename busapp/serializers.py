@@ -57,11 +57,11 @@ class BusSerializer(serializers.ModelSerializer):
 	#discounts offered on this bus in percentage
 	discount = models.DecimalField(max_digits=4, decimal_places=2)
 	"""
-	owner = serializers.Field()
 	route = serializers.PrimaryKeyRelatedField()
 	class Meta:
 		model = Bus
 		fields = ('owner', 'route', 'rate', 'speed', 'capacity', 'discount')
+		read_only_field = ('owner',)
 
 #transaction Serializer
 class TransactionSerializer(serializers.ModelSerializer):
