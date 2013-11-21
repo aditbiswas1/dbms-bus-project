@@ -20,7 +20,7 @@ class UserSerializer(serializers.ModelSerializer):
 class UniversalRouteSerializer(serializers.ModelSerializer):
 	route_stops = serializers.HyperlinkedRelatedField(read_only=True, view_name="routestop-detail")
 	source = serializers.HyperlinkedRelatedField( view_name="busstop-detail")
-	destination = serializers.HyperlinkedRelatedField(read_only=True, view_name="busstop-detail")
+	destination = serializers.HyperlinkedRelatedField( view_name="busstop-detail")
 	class Meta:
 		model = UniversalRoute
 		fields = ('id', 'source', 'destination', 'route_stops')
@@ -34,13 +34,6 @@ class RouteStopSerializer(serializers.ModelSerializer):
 		fields = ('id', 'route', 'bus_stop', 'bus_stop_number', 'distance')
 
 #serialize company
-class CompanySerializer(serializers.ModelSerializer):
-	user = serializers.PrimaryKeyRelatedField()
-	buses = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name="bus-detail")
-	class Meta:
-		model = Company
-		fields = ('id', 'user', 'name', 'manager_phone', 'buses')
-		owner = serializers.Field(source='owner.username')
 
 class BusSerializer(serializers.ModelSerializer):
 	"""
@@ -60,7 +53,18 @@ class BusSerializer(serializers.ModelSerializer):
 	owner = serializers.HyperlinkedRelatedField(view_name="company-detail")
 	class Meta:
 		model = Bus
-		fields = ('owner', 'route', 'rate', 'speed', 'capacity', 'discount')
+		fields = ('id', 'owner', 'route', 'rate', 'speed', 'capacity', 'discount')
+
+
+class CompanySerializer(serializers.ModelSerializer):
+	user = serializers.PrimaryKeyRelatedField()
+	buses = BusSerializer(many=True)
+	# buses = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name="bus-detail")
+	class Meta:
+		model = Company
+		fields = ('id', 'user', 'name', 'manager_phone', 'buses')
+		owner = serializers.Field(source='owner.username')
+
 
 #transaction Serializer
 class TransactionSerializer(serializers.ModelSerializer):
