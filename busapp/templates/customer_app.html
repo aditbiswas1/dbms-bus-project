@@ -28,6 +28,8 @@
 		$('#postdata').append('<input type="text" name="seat" value=' + this.innerHTML + '>');
 		
 		$('#postdata').hide();
+
+		//$('#p1 .largetxt').html("Transaction successful.");
 	});
 
 </script>
@@ -90,8 +92,6 @@
 				}
 
 				//Check transactions to see if the seats under the current schedule are filled
-				console.log("Transactions:");
-				console.log(tran);
 
 				$('#seats ul').html("");
 
@@ -99,7 +99,6 @@
 				
 				for(transaction in tran.models)
 				{
-					console.log(tran.models[transaction].attributes['schedule']);
 					if(tran.models[transaction].attributes['schedule'] == currentschedule.id)
 					{
 						filled[tran.models[transaction].attributes['seat']-1]=1;
@@ -250,6 +249,12 @@ body {
 	margin-left: 5%;
 }
 
+.largetxt{
+	color:white;
+	text-shadow:2px 2px rgba(3,50,3,0.6);
+	font-size:medium;
+}
+
 form{
 	margin-left:5%;
 	margin-top:40px;
@@ -271,7 +276,7 @@ form{
 	padding:10px;
 	background:rgba(12,50,12,0.9);
 	color:white;
-	overflow:scroll;
+	overflow-y:scroll;
 	height:80px;
 }
 
@@ -358,6 +363,7 @@ td{
 <h2 id="header"></h2>
 <h3 id="header"></h3>
 <div id="p1">
+<span class="largetxt"></span>
 <form method="get" action=".">{% csrf_token %}
     <div class="input-group" id="source">
       <div class="input-group-btn">
@@ -414,7 +420,7 @@ td{
     
 <div class="input-group" id="seats">
       <div class="input-group-btn">
-        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Seats <span class="caret"></span></button>
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Seat <span class="caret"></span></button>
         <ul class="dropdown-menu">
         </ul>
       </div>

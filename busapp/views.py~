@@ -210,7 +210,7 @@ def customer_app(request):
 	elif ('source' in request.GET and (not request.GET['source'] or request.GET['source']=='')) or ('destination' in request.GET and (not request.GET['destination'] or request.GET['destination']=='')) or ('date' in request.GET and (not request.GET['date'] or request.GET['date']=='')):
 		error = "Incomplete details."
 	elif 'customer' in request.POST and 'schedule' in request.POST and 'cost' in request.POST and 'seat' in request.POST and request.POST['customer'] and request.POST['cost'] and request.POST['seat']:
-		cus = Customer.objects.get(user=request.POST['customer']).fname
+		cus = Customer.objects.get(user=request.POST['customer'])
 		sch = Schedule.objects.get(id=request.POST['schedule'])
 		tcost = request.POST['cost']
 		tseat = request.POST['seat']

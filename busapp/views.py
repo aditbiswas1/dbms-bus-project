@@ -220,7 +220,6 @@ def customer_app(request):
 			cost = tcost,
 			seat = tseat
 			)
-		print transaction
 
 	session = User.objects.get(username=request.user)
 	customer = Customer.objects.get(user=session)
