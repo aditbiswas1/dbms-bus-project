@@ -17,7 +17,7 @@ from django.template import RequestContext, loader
 
 from busapp.models import Bus, BusStop, UniversalRoute, RouteStop, Company, Customer, Transaction, Schedule
 from busapp.permissions import *
-
+from django.core import serializers
 # BusStop Apis
 class BusStopList(generics.ListCreateAPIView):
 	"""
@@ -50,7 +50,8 @@ class UniversalRouteDetail(generics.RetrieveUpdateDestroyAPIView):
         #permission_classes = 1
 	queryset = UniversalRoute.objects.all()
 	serializer_class = UniversalRouteSerializer
-	permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsAdmin_or_ReadOnly,)
+	permission_classes = (permissions.IsAuthenticatedOrReadOnly,IsAdmin_or_ReadOnly)
+	# , IsAdmin_or_ReadOnly,
 
 #routesStops api
 class RouteStopList(generics.ListCreateAPIView):
@@ -104,7 +105,7 @@ class BusList(generics.ListCreateAPIView):
 	serializer_class = BusSerializer
         permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsCompanyUser_or_ReadOnly,)
 	def pre_save(self, obj):
-                obj.owner = self.request.owner
+				obj.owner = User.objects.get(username=self.request.user).company
 
 class BusDetail(generics.RetrieveUpdateDestroyAPIView):
         #permission_classes = 11 (change it)
@@ -112,8 +113,8 @@ class BusDetail(generics.RetrieveUpdateDestroyAPIView):
 	serializer_class = BusSerializer
         permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsCompanyUser_or_ReadOnly_11,)
 	def pre_save(self, obj):
-                obj.owner = self.request.owner
-
+			user = User.objects.get(username=self.request.user)
+			obj.owner = user.company
 #Transaction api
 class TransactionList(generics.ListCreateAPIView):
         #permission_classes = 7
@@ -138,13 +139,13 @@ class ScheduleList(generics.ListCreateAPIView):
         #permission_classes = 2
 	queryset = Schedule.objects.all()
 	serializer_class = ScheduleSerializer
-        permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsCompanyUser_or_ReadOnly,)
+        permission_classes = (permissions.IsAuthenticatedOrReadOnly, ScheduleHassCompanyUser_or_ReadOnly,)
         
 class ScheduleDetail(generics.RetrieveUpdateDestroyAPIView):
         #permission_classes = 2
 	queryset = Schedule.objects.all()
 	serializer_class = ScheduleSerializer
-	permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsCompanyUser_or_ReadOnly,)
+	permission_classes = (permissions.IsAuthenticatedOrReadOnly, ScheduleHassCompanyUser_or_ReadOnly,)
 
 #Customers api
 class CustomerList(generics.ListCreateAPIView):
@@ -182,7 +183,8 @@ def customer_app(request):
 
 def company_app(request):
 	template = loader.get_template('busapp/company_app.html')
-	context = RequestContext(request, {})
+	user = User.objects.get(username=request.user)
+	context = RequestContext(request, {"company": user.company.id} )
 	return HttpResponse(template.render(context))
 
 def customer_confirm(request):
