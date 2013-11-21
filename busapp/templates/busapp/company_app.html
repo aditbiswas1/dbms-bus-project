@@ -1,20 +1,60 @@
 {% load static from staticfiles %}
+<head>
+	<title>Company DashBoard</title>
 <script src="{% static 'js/vendor/underscore-min.js' %}"></script>
 <script src="{% static 'js/vendor/jquery-1.10.2.min.js' %}"></script>
 <script src="{% static 'js/vendor/backbone-min.js'%}"></script>
+<script>
+	var userid = {{user.id}}
+	var companyid = {{ company }}
+</script>
 <script type="text/javascript">
+	// Company definitions
+	/* Definitions of the company model */
 		var Company = Backbone.Model.extend({
+			initialize: function(){
+				this.url = '../companies/'+companyid+"/"
+			}
+		});
+	/*Defintion of company view */
+		var CompanyView = Backbone.View.extend({
+			el: "#profile",
+			template : "#CompanyModelView",
+			initialize: function(){
+				this.listenTo(this.model, "change", this.render);
+			},
+			render: function(){
+				template = _.template($(this.template).html())
+				this.$el.html(template(this.model.toJSON()));
+				$("#profile").append(this.$el);
+				return this;
+			}
+		});
+
+		$(document).ready(function(){
+			company = new Company();
+
+			companyView = new CompanyView({model: company});
+			company.fetch();
 
 		});
-		var Companies = Backbone.Collection.extend({
-			url: '../busstops/',
-			model: Company,
-			/*
-			initialize: function(){
-				this.fetch();
-			}
-			*/
-		});
-		companies = new Companies();
+		
 	</script>
-<h1>This is working</h1>
+	
+
+</head>
+<body style="margin: 0 auto;">
+	<h1>Welcome to the company dashboard</h1>
+	<div id="profile"></div>
+
+
+	
+	<!-- template definitions -->
+	<script type="text/template" id="CompanyModelView">
+		<ul>
+			<h1>Working</h1>
+			<li><%= name %></li>
+			<li><%= manager_phone %></li>
+		</ul>
+	</script>
+</body>
