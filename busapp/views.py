@@ -181,11 +181,6 @@ def customer_app(request):
 	context = RequestContext(request, {})
 	return HttpResponse(template.render(context))
 
-def customer_app(request):
-	template = loader.get_template('customer_app.html')
-	context = RequestContext(request, {})
-	return HttpResponse(template.render(context))
-
 def company_app(request):
 	template = loader.get_template('busapp/company_app.html')
 	user = User.objects.get(username=request.user)
