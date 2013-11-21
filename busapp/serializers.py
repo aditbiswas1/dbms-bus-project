@@ -71,9 +71,10 @@ class TransactionSerializer(serializers.ModelSerializer):
 
 #schedule serializer
 class ScheduleSerializer(serializers.ModelSerializer):
+        capacity = serializers.Field()
 	class Meta:
 		model = Schedule
-		fields = ('bus','datetime')
+		fields = ('bus','datetime','capacity')
 
 #serialize customers
 class CustomerSerializer(serializers.ModelSerializer):
