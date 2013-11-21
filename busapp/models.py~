@@ -1,6 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+class Admin(models.Model):
+        user = models.OneToOneField(User)
+        
+
 class Company(models.Model):
 	#username associated to authenticate company
 	user = models.OneToOneField(User)
@@ -74,6 +78,10 @@ class Schedule(models.Model):
 class Customer(models.Model):
 	#username associated with the customer
 	user = models.OneToOneField(User)
+	#first name
+	fname = models.CharField(max_length=20)
+	#last name
+	lname = models.CharField(max_length=20)
 	#phone number
 	phone_number = models.IntegerField()
 	#bank account
@@ -83,11 +91,7 @@ class Customer(models.Model):
 	#date of birth
 	dob = models.DateField()
 	#gender
-<<<<<<< HEAD
 	gender = models.CharField(max_length=6)
-=======
-	#gender = models.
->>>>>>> arora
 
 class Transaction(models.Model):
 	#identified using transaction.id

@@ -11,7 +11,11 @@
             <tr><th><label for="id_password">Password:</label></th><td>{{ form.password }}</td></tr>
         </table>
         <input type="submit" value="Login" />
+<<<<<<< HEAD
+        <input type="hidden" name="next" value="/customer-app/" />
+=======
         <input type="hidden" name="next" value="/redirect" />
+>>>>>>> 1873549c4543dd879e525fcc83b4df48e81b2e9d
     </form>
     <a href="/register">Register</a>
 {% endblock %}
