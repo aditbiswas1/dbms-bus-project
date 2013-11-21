@@ -20,6 +20,19 @@
 				this.url = '../companies/'+companyid+"/"
 			}
 		});
+
+		var Route = Backbone.Model.extend({
+
+		});
+
+		var Routes = Backbone.Collection.extend({
+			url: '../universal',
+			model: Route,
+
+			initialize: function(){
+				this.fetch();
+			}
+		})
 	/*Defintion of company view */
 		var CompanyView = Backbone.View.extend({
 			el: "#profile",
@@ -34,6 +47,7 @@
 				return this;
 			}
 		});
+
 
 		/* Buses view definition */
 		var Bus = Backbone.Model.extend({
@@ -131,6 +145,9 @@
 			company.fetch({success: function(){
 				buses = new Buses(company.attributes.buses);
 			}});
+
+			routes = new Routes();
+
 			app = new AppView();
 
 			
